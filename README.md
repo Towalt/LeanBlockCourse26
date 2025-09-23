@@ -8,18 +8,26 @@
 
 * This is the second time this course is being held. The structure will largely follow last year's with some additions and modifications, but is nevertheless subject to (spontaneous) change. Constructive feedback is welcomed throughout the course and afterwards.
 * The course is split into two sessions (9:30 to 12:30 and 14:00 to 17:00) each day and takes place from **Monday the 2nd of March** to **Friday the 13th of March 2026**. The venue has not yet been settled, but the course will be helf on the Dahlem Campus, either at FUB or ZIB.
-* The course is open to everyone, including guest auditors (Gasthörer), not just those who need it for their degree. However, priority will be given to FU students who need the course as part of their ABV degree program. The course will also be offered for **Master students at the FUB** as well as as a **BMS Advanced Course** for the first time this year! For the `aktive Teilnahme' Master-level participants will be required to solve more advanced problems in the exercise sessions during the course. Both Bachelor and Master-level students will be given the same final exam at the end of the course. There will be an additional final project task for the Master-level students that will be evaluated one or two weeks after the end of the block course in a short presentation.
-* Participants need to bring a laptop to do the exercises and follow along during the course and work on exercises and project work.
+* The course is open to everyone, including guest auditors (Gasthörer), not just those who need it for their degree. However, priority will be given to FU students who need the course as part of their ABV degree program. The course will also be offered for **Master students at the FUB** as well as as a **BMS Advanced Course** for the first time this year! For the `aktive Teilnahme', Master-level participants will be required to solve additional and more advanced problems in the exercise sessions compared to Bachelor-level students. Both Bachelor and Master-level students will be given the same **final exam on the second Friday at the end of the course**. There will be an **additional final project task for the Master-level students** that the students will be given one or two weeks time after the end of the block course to solve. The exact scope of that additional project and the format of the evaluation of it has not yet been determined but may include an in-person presentation.
+* Participants **need to bring a laptop** to do the exercises and follow along during the course and work on exercises and project work.
 * Completion of Analysis I and Linear Algebra I should provide a sufficient mathematical background, but participants should have a strong understanding of these subjects, as formal proof verification is very "unforgiving". No prior programming experience is required, but a certain "technical affinity and interest" is needed.
-* The course will be conducted in English, but Bachelor students taking the course as part of their ABV requirements may express themselves in German if they prefer.
+* The course will be **conducted in English**, but Bachelor students taking the course as part of their ABV requirements may express themselves in German if they prefer.
 
 ## Technical difficulties
+
+### `git`
+
+*No information yet.*
 
 ### Wrangling `lean` and `lake`
 
 * `lake init ProjectName math` sets up a project with mathlib as a dependency in the current folder.
 * `lake build` builds the project.
 * If your info view shows that it is compiling a lot of files from mathlib, then (1) run `pkill -f lean` (MacOS / Linux) or `Stop-Process -Name *lean* -Force` (Windows) to kill the running Lean processes, (2) remove the `.lake` folder, e.g., by running `rm -rf .lake` in a POSIX complaint OS, and run `lake clean`, (3) run `lake exe cache get` to download the mathlib binaries again, and finally (4) restart the Lean server by clicking on the `∀` button in VS Code and choosing `Server: Restart Server`.
+
+### `leanblueprint`
+
+*No information yet.*
 
 ## Resources
 
