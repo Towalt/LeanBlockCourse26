@@ -167,28 +167,27 @@ def generate() -> str:
         if not sections:
             continue
 
+        has_exercises = any(sec.blocks for sec in sections)
         lines.append("")
-        lines.append("| Section | Topic |")
-        lines.append("|---------|-------|")
+        if has_exercises:
+            lines.append("| Section | Topic | Exercises |")
+            lines.append("|---------|-------|-----------|")
+        else:
+            lines.append("| Section | Topic |")
+            lines.append("|---------|-------|")
         for sec in sections:
             link = f"[{sec.name}]({github_url(sec.rel_path)})"
-            lines.append(f"| {link} | {sec.topic} |")
-
-        # Exercise details
-        has_exercises = any(sec.blocks for sec in sections)
-        if not has_exercises:
-            continue
-
-        lines.append("")
-        lines.append("**Exercises:**")
-        for sec in sections:
-            for block in sec.blocks:
-                block_link = f"[{block.heading}]({github_url(sec.rel_path, block.line)})"
-                lines.append(f"- **{sec.name}** — {block_link}")
-                for ex in block.exercises:
-                    ex_link = f"[{ex.label}]({github_url(sec.rel_path, ex.line)})"
-                    desc = f" — {ex.description}" if ex.description else ""
-                    lines.append(f"  - {ex_link}{desc}")
+            if has_exercises:
+                if sec.blocks:
+                    block_links = " \\| ".join(
+                        f"[Block {i + 1}]({github_url(sec.rel_path, b.line)})"
+                        for i, b in enumerate(sec.blocks)
+                    )
+                else:
+                    block_links = "—"
+                lines.append(f"| {link} | {sec.topic} | {block_links} |")
+            else:
+                lines.append(f"| {link} | {sec.topic} |")
 
     # Examination (static)
     lines.append("")
