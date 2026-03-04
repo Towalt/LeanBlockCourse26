@@ -19,6 +19,9 @@ This module introduces how to work with compound propositions:
 - Disjunction (`OR`, `∨`)
 - Equivalence (`↔`) is (essentially but not exactly) just a `(_ → _) ∧ (_ → _)`
 
+All three are right-associative. `↔` is non-associative and cannot be chained
+without explicit brackets (use `trans` or `TFAE` instead).
+
 Key tactics:
 - `constructor` for splitting compound goals
 - `cases` and `rcases` for basic pattern matching
@@ -221,10 +224,10 @@ example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) := by
   -- First step if we are lost: simplify the goal as much as possible!
   intro p          -- top level connective in goal is `→`, so we use `intro`
   constructor      --  top level connective in goal is `∧`, so we use `constructor`
-  · have q : Q := by -- `let` is also appropriate here
-      exact h₁ p  
+  · have q : Q := by -- convention: `have` for Prop, `let` for data (→ P04) ...
+      exact h₁ p
     exact q
-  · have r : R := by -- `let` is also appropriate here
+  · have r : R := by -- ... for propositions they behave the same
       exact h₂ p    
     exact r
 
@@ -504,7 +507,7 @@ example (P Q R : Prop) (h : P ∧ Q ∧ R) : Q := by
   obtain ⟨_, q, _⟩ := h
   exact q
 
--- ... but only because `P ∧ Q ∧ R` was bracketed the "natural" way.
+-- ... but only because `∧` is right-associative: `P ∧ Q ∧ R` means `P ∧ (Q ∧ R)`.
 example (P Q R : Prop) (h : (P ∧ Q) ∧ R) : Q := by
   obtain ⟨⟨_, q⟩, _⟩ := h  -- here `⟨_, q, _⟩` does not work because of `(P ∧ Q) ∧ R`
   exact q
@@ -564,6 +567,10 @@ example (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R := by
 Try to get the proof with the fewest non-whitespace characters possible!
 
 Hint: try `rintro` with nested structures
+
+Note: `∨` is also right-associative, so the conclusion of Exercise 2.1
+parses as `(P ∧ R) ∨ ((P ∧ S) ∨ ((Q ∧ R) ∨ (Q ∧ S)))`. This means
+`right; right; left` is needed to reach `Q ∧ R`, for instance.
 -/
 
 -- Exercise 2.1 (🥉170 🥈150 🏅130)

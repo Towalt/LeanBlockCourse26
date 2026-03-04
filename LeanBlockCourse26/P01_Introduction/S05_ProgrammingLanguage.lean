@@ -45,6 +45,9 @@ C:      int add(int x, int y) { return x + y; }
 #check add      -- 'add' has type Nat → Nat → Nat
 #check add 2 3  -- 2 + 3 = 5 is of type Nat
 #check add 2    -- we can partially apply: 'add 2' is of type Nat → Nat
+-- This works because `→` is right-associative: `Nat → Nat → Nat` means
+-- `Nat → (Nat → Nat)`, i.e., a function that takes a `Nat` and returns
+-- a function `Nat → Nat`. This is called currying.
 
 def triple_multiply (x y z : Nat) : Nat := x * y * z
 
