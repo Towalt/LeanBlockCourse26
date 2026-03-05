@@ -139,11 +139,11 @@ Normalizes negated expressions by pushing negation inward:
 - Simplifies nested negations
 -/
 
-theorem pushneg_example (P : Prop) : ¬¬P → P := by
+theorem push_neg_example (P : Prop) : ¬¬P → P := by
   push_neg
   exact id
 
-#print axioms pushneg_example  -- This does use the axiom of choice (classical logic)
+#print axioms push_neg_example  -- This does use the axiom of choice (classical logic)
 
 /-
 ## Exercise Block B01

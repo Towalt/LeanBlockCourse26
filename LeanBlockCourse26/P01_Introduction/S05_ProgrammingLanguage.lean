@@ -49,11 +49,11 @@ C:      int add(int x, int y) { return x + y; }
 -- `Nat → (Nat → Nat)`, i.e., a function that takes a `Nat` and returns
 -- a function `Nat → Nat`. This is called currying.
 
-def triple_multiply (x y z : Nat) : Nat := x * y * z
+def tripleMultiply (x y z : Nat) : Nat := x * y * z
 
-#eval triple_multiply 1 2 3    -- 1 * 2 * 3 = 6
-#check triple_multiply 1 2 3   -- 1 * 2 * 3 = 6 is of type Nat
-#check triple_multiply         -- 'triple_multiply' is of type Nat → Nat → Nat → Nat
+#eval tripleMultiply 1 2 3    -- 1 * 2 * 3 = 6
+#check tripleMultiply 1 2 3   -- 1 * 2 * 3 = 6 is of type Nat
+#check tripleMultiply         -- 'tripleMultiply' is of type Nat → Nat → Nat → Nat
 
 
 /-
