@@ -39,7 +39,7 @@ To prove `P ∧ Q`, we need to prove both `P` and `Q`. We can:
 - Use `constructor` as shorthand
 - Use angle bracket notation `⟨p, q⟩`
 
-`constructor` is used around 3,000 times in mathlib while
+`constructor` is used around 3,300 times in mathlib while
 `exact` followed by an `⟨⬝⟩` term is used around 7,000 times.
 -/
 
@@ -70,7 +70,7 @@ theorem goal_and_apply' (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
   · exact p -- The `\.` produces · and focuses on the next goal
   · exact q
 
-#print goal_and_apply' -- also produces `⟨p, q⟩` 
+#print goal_and_apply' -- also produces `⟨p, q⟩`
 
 -- In order not to have to remember `And.intro` (and the equivalent names
 -- for any other structures in the future), we can use the `constructor` tactic
@@ -121,8 +121,8 @@ To use a hypothesis `h : P ∧ Q`, we can:
 - Use `obtain` for destructuring
 - Use `cases` and `rcases` for basic pattern matching
 
-`obtain` is used around 15,000 times in mathlib, `cases` 3,000 times,
-and `rcases` 7,000 times.
+`obtain` is used around 16,000 times in mathlib, `cases` 3,200 times,
+and `rcases` 8,000 times.
 -/
 
 -- Using `.1` / `.2` notation
@@ -215,7 +215,7 @@ theorem and_left (P Q : Prop) : (P ∧ Q) → P := by
 example (P Q : Prop) : (P ∧ Q) → P := fun ⟨p, _⟩ => p
 
 -- ... which is just nicer notation for the term given by `#print and_left`
-example (P Q : Prop) : (P ∧ Q) → P := 
+example (P Q : Prop) : (P ∧ Q) → P :=
   fun h => match h with
     | ⟨p, _⟩ => p
 
@@ -236,24 +236,24 @@ example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) := by
       exact h₁ p
     exact q
   · have r : R := by -- ... for propositions they behave the same
-      exact h₂ p    
+      exact h₂ p
     exact r
 
 -- We can simplify ...
 example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) := by
   intro p
   constructor
-  · have q : Q := h₁ p  
+  · have q : Q := h₁ p
     exact q
-  · have r : R := h₂ p    
+  · have r : R := h₂ p
     exact r
 
 -- ... and simplify ...
 example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) := by
   intro p
   constructor
-  · exact h₁ p  
-  · exact h₂ p    
+  · exact h₁ p
+  · exact h₂ p
 
 -- ... and simplify ...
 example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) := by
@@ -273,7 +273,8 @@ example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) :=
 - `try tac` attempts to run `tac` without causing failure if it does not apply.
 - `tac <;> tac'` runs `tac` on the main goal and `tac'` on each produced goal.
 
-They are respectively used around 150, 500, 400, and 7000 times in mathlib.
+They are respectively used around 150, 600, and 150 times in mathlib
+(`<;>` usage is not tracked separately).
 -/
 
 -- We have seen this example before ...
@@ -350,7 +351,7 @@ example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
   obtain ⟨p, q⟩ := h
   constructor <;> try exact p
   exact q
-  
+
 /-
 Basically: chained `<;>` is the same as an indented `all_goals` block.
 
@@ -523,13 +524,11 @@ example (P Q R : Prop) (h : (P ∧ Q) ∧ R) : Q := by
 example (P Q R : Prop) (h : P ∧ Q ∧ R) : Q := by
   rcases h with ⟨_, q, _⟩
   exact q
-
-
 /-
 ## The `rintro` tactic
 
 `rintro` allows for more complex pattern matching and is
-used around 7500 times in mathlib.
+used around 7,000 times in mathlib.
 -/
 
 -- Mixing `∧` with `∨` can quickly become very annoying ...
@@ -812,14 +811,15 @@ example (P Q R : Prop) (h : P ↔ Q) (q_to_r : Q → R) : P → R := by
 /-
 ## The `trans` tactic
 
-The `trans` tactic allows us to chain together equivalences (or equalities) by introducing an intermediate statement.
+The `trans` tactic allows us to chain together equivalences (or equalities) by
+introducing an intermediate statement.
 In the following example, we prove that `B ↔ C` by chaining three equivalences:
 
 - From `A ↔ B` we get `B ↔ A` by symmetry,
 - Then we use `A ↔ D`,
 - And finally, from `C ↔ D` we get `D ↔ C` by symmetry.
 
-This lets us conclude `B ↔ C`. It is used around 400 times in mathlib.
+This lets us conclude `B ↔ C`. It is used around 450 times in mathlib.
 -/
 
 example (A B C D : Prop) (h₁ : C ↔ D) (h₂ : A ↔ B) (h₃ : A ↔ D) : B ↔ C := by
