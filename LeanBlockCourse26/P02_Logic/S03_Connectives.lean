@@ -785,7 +785,7 @@ example (P Q : Prop) (h : P ↔ Q) (q : Q) : P := h.2 q
 -- ... but `left` and `right` do *not* work because there is actually
 -- no `∧` underlying the `↔` ...
 -- example (P Q : Prop) (h : P ↔ Q) (p : P) : Q := h.left p
--- example (P Q : Prop) (h : P ↔ Q) (p : P) : P := h.right q
+-- example (P Q : Prop) (h : P ↔ Q) (q : Q) : P := h.right q
 
 -- ... but we can still also destructure equivalences using `obtain` ...
 example (P Q : Prop) (h : P ↔ Q) (p : P) : Q := by

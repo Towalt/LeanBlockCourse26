@@ -7,6 +7,7 @@ permalink: /
 <!-- begin announcements -->
 <style>.announcements {  border: 1px solid #e8e8e8; border-left: 4px solid #f0c36d;  border-radius: 4px; margin: 1rem 0; padding: 0;}.announcement-item {  display: flex; gap: 0.5rem;  padding: 0.5rem 1rem; line-height: 1.6;}.announcement-item > .label {  flex-shrink: 0; align-self: baseline;}.announcement-item + .announcement-item {  border-top: 1px solid #f0f0f0;}.announcements summary {  padding: 0.5rem 1rem; cursor: pointer; color: #586069;  font-size: 0.9em;}.announcements details {  border-top: 1px solid #e8e8e8;}.announcements details .announcement-item:first-child {  border-top: none;}</style>
 <div class="announcements">
+<div class="announcement-item"><span class="label label-yellow">Thu, Mar 5</span><span>The homepage now has an <a href="https://forduniver.github.io/LeanBlockCourse26/ADDENDUM">Addendum</a> section with entries on measuring proof length (<code>#golf</code>) and disabling VS Code distractions.</span></div>
 <div class="announcement-item"><span class="label label-yellow">Tue, Mar 3</span><span>Since we went over by 10 minutes, on Wednesday (March 4) we start at <strong>9:40</strong> instead of 9:30.</span></div>
 <div class="announcement-item"><span class="label label-yellow">Mon, Mar 2</span><span>Since we went over by 30 minutes, on Tuesday (March 3) we start at <strong>10:00</strong> instead of 9:30.</span></div>
 <details>
@@ -15,7 +16,7 @@ permalink: /
 </details>
 </div><!-- end announcements -->
 
-# Formalized Math in LEAN
+# Formalized Math in Lean
 {: .fs-9 }
 
 Block Course at the Freie Universität Berlin — March 2026

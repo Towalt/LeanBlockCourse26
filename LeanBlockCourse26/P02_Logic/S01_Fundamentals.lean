@@ -117,14 +117,13 @@ example (P Q : Prop) (p : P) (q : Q) : P := by
 
 The `exact` tactic allows us to provide a term that precisely matches the goal type.
 Unlike assumption, which searches for matches, exact requires us to specify exactly
-which term we want to use, but otherwise has the same effect. The `rfl` tactic in fact
-was just syntax sugar for `exact rfl`. The tactic `exact?` looks for any term that can be
+which term we want to use, but otherwise has the same effect. The `rfl` tactic is essentially `exact rfl`. The tactic `exact?` looks for any term that can be
 used to close the goal. This tactic is used over 40,000 times in mathlib.
 -/
 
 -- Given a natural number `n` where `10 > n` and `1 < n`, prove that `1 < n`
 -- `_` makes the linter not complain, refers to intentionally unnamed variable
--- same as in many other languages. Note that `\N(at)` produces `ℕ`
+-- same as in many other languages. Note that `\N` (or `\Nat`) produces `ℕ`
 example (n : ℕ) (_ : 10 > n) (h₂ : 1 < n) : 1 < n := by  
   exact h₂ -- `exact` is leans `return` (in tactic mode, in term mode its implicit)
 
@@ -636,7 +635,7 @@ lemma identity_term_lambda (P : Prop) : P → P := fun p => p
 
 
 -- Third in term mode with a lambda function -- second syntax
--- Note that `λ` is marked as deprecated by linter
+-- Note that the linter prefers `fun` over `λ`
 lemma identity_term_lambda' (P : Prop) : P → P := λ p ↦ p
 
 #print identity_term_lambda' -- gives term `fun P p ↦ p`

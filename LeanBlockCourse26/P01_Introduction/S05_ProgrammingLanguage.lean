@@ -180,8 +180,7 @@ def inferredAdd' (x : Nat) (y : Int) := x + y
 
 def coercedOutputAdd (x y : Nat) : Int := x - y
 
-#check coercedOutputAdd 2 3 -- Nat → Nat → Int, but it uses the
-                            -- Int subtraction and coerces the Nat to Int
+#check coercedOutputAdd 2 3 -- Int (function uses Int subtraction, coerces Nat inputs)
 #eval coercedOutputAdd 2 3  -- 2 - 3 = -1 since x and y are both first coerced to Int
 
 /-
@@ -346,5 +345,3 @@ example (P Q : Prop) : P ∧ Q → P := by sorry
 -- but this one is unnecessary, since it is inferred by our type system
 axiom and_left_axiom (P Q : Prop) : P ∧ Q → P
 
--- Just a small test of git commit
-#check hello
