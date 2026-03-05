@@ -31,6 +31,8 @@ Then run `lake update ProofGolf` and add `import ProofGolf` to any file where yo
 Wrap any declaration with `#golf`:
 
 ```lean
+import ProofGolf
+
 #golf example (P Q : Prop) : P ∧ Q → Q ∧ P := by
   intro ⟨p, q⟩
   exact ⟨q, p⟩
