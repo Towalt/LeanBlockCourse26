@@ -446,7 +446,7 @@ theorem Subset.antisymm_iff : (S = T) ↔ (S ⊆ T ∧ T ⊆ S) := by
     · intro xs
       exact hx.mp xs
     · intro xt
-      exact hx.mpr xt  
+      exact hx.mpr xt
   · rintro ⟨st, ts⟩
     exact Subset.antisymm st ts
 
@@ -474,7 +474,7 @@ example {x : α} (h₁ : x ∈ S) (h₂ : x ∉ T) : ¬S ⊆ T :=
   fun st => h₂ <| st h₁
 
 -- Exercise 2.4
-lemma compl_subset_compl_of_subset (h₁ : S ⊆ T) : Tᶜ ⊆ Sᶜ := by
+theorem compl_subset_compl_of_subset (h₁ : S ⊆ T) : Tᶜ ⊆ Sᶜ := by
   rw [subset_def]
   intro x xtc
   rw [mem_compl_iff] at *
@@ -546,7 +546,7 @@ example (S : Set α) : Sᶜᶜᶜᶜ = Sᶜᶜ := by
   push_neg
   rfl
 
-example (S : Set α) : Sᶜᶜ =  Sᶜᶜᶜᶜ := by
+example (S : Set α) : Sᶜᶜ = Sᶜᶜᶜᶜ := by
   ext s
   rw [mem_compl_iff] -- this infers arguments `Sᶜᶜ s` for `mem_compl_iff` and matches once
   rw [mem_compl_iff] -- this infers arguments `Sᶜ s` for `mem_compl_iff` and matches once
@@ -564,7 +564,7 @@ example (S : Set α) : Sᶜᶜᶜᶜ = Sᶜᶜ := by
   rfl
 
 -- Exercise 2.6
-lemma compl_subset_compl (S T : Set α) : Tᶜ ⊆ Sᶜ ↔ S ⊆ T  := by
+theorem compl_subset_compl (S T : Set α) : Tᶜ ⊆ Sᶜ ↔ S ⊆ T := by
   constructor
   · intro h
     have := compl_subset_compl_of_subset h
@@ -574,14 +574,14 @@ lemma compl_subset_compl (S T : Set α) : Tᶜ ⊆ Sᶜ ↔ S ⊆ T  := by
     apply compl_subset_compl_of_subset
     exact h
 
-example (S T : Set α) : Tᶜ ⊆ Sᶜ ↔ S ⊆ T  := 
+example (S T : Set α) : Tᶜ ⊆ Sᶜ ↔ S ⊆ T :=
   ⟨fun h₁ => compl_compl S ▸ compl_compl T ▸ compl_subset_compl_of_subset h₁,
   compl_subset_compl_of_subset⟩
 
 -- Exercise 2.7 (Master)
 example (h : S ⊆ T) {x : α} (hx : x ∈ Tᶜ) : x ∈ Sᶜ := by
   rw [mem_compl_iff] at *
-  intro xs 
+  intro xs
   have xt := h xs
   contradiction
 
@@ -591,7 +591,7 @@ example (h : S ⊆ T) {x : α} (hx : x ∈ Tᶜ) : x ∈ Sᶜ :=
 -- Exercise 2.8 (Master)
 example {R : Set α} (h₁ : R ⊆ S) (h₂ : S ⊆ T) : Tᶜ ⊆ Rᶜ := by
   apply compl_subset_compl_of_subset
-  exact Subset.trans h₁ h₂ 
+  exact Subset.trans h₁ h₂
 
 example (R S T : Set α) (h₁ : R ⊆ S) (h₂ : S ⊆ T) : Tᶜ ⊆ Rᶜ :=
   compl_subset_compl_of_subset (Subset.trans h₁ h₂)

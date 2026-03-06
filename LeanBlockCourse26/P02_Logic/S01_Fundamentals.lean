@@ -581,7 +581,7 @@ Around 100,000 proofs out of 320,000 in mathlib are written in tactic mode,
 though this includes proofs of minor facts where term mode is more appropriate.
 -/
 
-lemma id_proof (P Q : Prop) (p : P) (q : Q) : P := by
+theorem id_proof (P Q : Prop) (p : P) (q : Q) : P := by
   assumption -- or `exact p`
 
 -- You can print the term mode proof using `#print`, which will show
@@ -594,7 +594,7 @@ But it also modified the statement from
 `∀ (P Q : Prop), P → Q → P` type. So this does not work:
 
 ```
-lemma id_proof_term (P Q : Prop) (p : P) (q : Q) : P :=
+theorem id_proof_term (P Q : Prop) (p : P) (q : Q) : P :=
   fun P Q p q ↦ p
 ```
 
@@ -603,10 +603,10 @@ Lean actually takes all the arguments (things to the left of `:`) and
 -/
 
 -- But this does:
-lemma id_proof_term (P Q : Prop) (p : P) (q : Q) : P := p
+theorem id_proof_term (P Q : Prop) (p : P) (q : Q) : P := p
 
 -- And this does:
-lemma id_proof_term' : ∀ (P Q : Prop), P → Q → P :=
+theorem id_proof_term' : ∀ (P Q : Prop), P → Q → P :=
   fun _ _ p _ => p -- or `fun P Q p q => p`
 
 -- Same output (up to renamed variables) as `#print id_proof`
@@ -615,27 +615,27 @@ lemma id_proof_term' : ∀ (P Q : Prop), P → Q → P :=
 -- Let us look at the identity function in various styles.
 
 -- This is `id` in Lean (Init.Prelude)
-lemma identity_tactic_intro (P : Prop) : P → P := by
+theorem identity_tactic_intro (P : Prop) : P → P := by
   intro p
   assumption -- or `exact p`
 
 #print identity_tactic_intro -- gives term `fun P p ↦ p`
 -- Second in tactic mode, but cheating with `id`
-lemma identity_tactic_id (P : Prop) : P → P := by
+theorem identity_tactic_id (P : Prop) : P → P := by
   exact id
 
 #print identity_tactic_id  -- gives term `fun P ↦ id`
 -- Third in term mode with a lambda function -- first syntax
-lemma identity_term_lambda (P : Prop) : P → P := fun p => p
+theorem identity_term_lambda (P : Prop) : P → P := fun p => p
 
 #print identity_term_lambda -- gives term `fun P p ↦ p`
 -- Third in term mode with a lambda function -- second syntax
 -- Note that the linter prefers `fun` over `λ`
-lemma identity_term_lambda' (P : Prop) : P → P := λ p ↦ p
+theorem identity_term_lambda' (P : Prop) : P → P := λ p ↦ p
 
 #print identity_term_lambda' -- gives term `fun P p ↦ p`
 -- Finally, this is actually just the identity function `id`
-lemma identity_term_id (P : Prop) : P → P := id
+theorem identity_term_id (P : Prop) : P → P := id
 
 #print identity_term_id  -- gives term `fun P ↦ id`
 -- `rfl` confirms these are all truly "the same" ...
