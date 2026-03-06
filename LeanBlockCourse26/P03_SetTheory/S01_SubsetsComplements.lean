@@ -4,6 +4,7 @@ https://github.com/leanprover-community/lean4game
 -/
 
 import Mathlib.Data.Set.Basic
+import Mathlib.Order.BooleanAlgebra.Set
 import ProofGolf
 
 /-
@@ -397,38 +398,206 @@ variable {S T : Set α}
 
 -- Exercise 2.1
 theorem Subset.antisymm (h₁ : S ⊆ T) (h₂ : T ⊆ S) : S = T := by
-  sorry
+  rw [ext_iff]
+  intro x
+  constructor
+  · intro s
+    exact h₁ s
+  · intro t
+    exact h₂ t
+
+example (h₁ : S ⊆ T) (h₂ : T ⊆ S) : S = T := by
+  ext x
+  exact ⟨fun s => h₁ s, fun t => h₂ t⟩
+
+example (h₁ : S ⊆ T) (h₂ : T ⊆ S) : S = T :=
+  ext_iff.mpr (fun _ => ⟨fun s => h₁ s, fun t => h₂ t⟩)
+
+-- Let's see how mathlib proves it ...
+#check Set.Subset.antisymm
+
+example (h₁ : S ⊆ T) (h₂ : T ⊆ S) : S = T := by
+  apply Set.ext
+  intro x
+  constructor
+  · intro x
+    exact h₁ x
+  · intro x
+    exact h₂ x
+
+example (h₁ : S ⊆ T) (h₂ : T ⊆ S) : S = T := by
+  apply Set.ext
+  intro x
+  constructor
+  · exact fun x => h₁ x
+  · exact fun x => h₂ x
+
+-- this is how it is implemented in mathlib
+example (h₁ : S ⊆ T) (h₂ : T ⊆ S) : S = T :=
+  Set.ext fun _ => ⟨@h₁ _, @h₂ _⟩
 
 -- Exercise 2.2
 theorem Subset.antisymm_iff : (S = T) ↔ (S ⊆ T ∧ T ⊆ S) := by
-  sorry
+  constructor
+  · intro st
+    rw [ext_iff] at st
+    constructor
+    all_goals intro x ; have hx := st x
+    · intro xs
+      exact hx.mp xs
+    · intro xt
+      exact hx.mpr xt  
+  · rintro ⟨st, ts⟩
+    exact Subset.antisymm st ts
+
+example : (S = T) ↔ (S ⊆ T ∧ T ⊆ S) := by
+  constructor
+  · intro st
+    rw [st]
+    trivial
+  · rintro ⟨st, ts⟩
+    exact Subset.antisymm st ts
+
+-- Let's see how mathlib proves it ...
+#check Set.Subset.antisymm_iff
+
+example : (S = T) ↔ (S ⊆ T ∧ T ⊆ S) :=
+  ⟨fun st => ⟨st.subset, st.symm.subset⟩, fun ⟨st, ts⟩ => Subset.antisymm st ts⟩
 
 -- Exercise 2.3 (Master)
 example {x : α} (h₁ : x ∈ S) (h₂ : x ∉ T) : ¬S ⊆ T := by
-  sorry
+  intro st
+  have xt := st h₁
+  contradiction
+
+example {x : α} (h₁ : x ∈ S) (h₂ : x ∉ T) : ¬S ⊆ T :=
+  fun st => h₂ <| st h₁
 
 -- Exercise 2.4
 lemma compl_subset_compl_of_subset (h₁ : S ⊆ T) : Tᶜ ⊆ Sᶜ := by
-  sorry
+  rw [subset_def]
+  intro x xtc
+  rw [mem_compl_iff] at *
+  intro xs
+  let xt := h₁ xs
+  exact xtc xt
+
+example (h₁ : S ⊆ T) : Tᶜ ⊆ Sᶜ := by
+  intro x xtc xs
+  have xt := h₁ xs
+  contradiction
+
+example (h₁ : S ⊆ T) : Tᶜ ⊆ Sᶜ :=
+  fun _ xtc xs => xtc <| h₁ xs
+
+-- Let's see how mathlib proves it ...
+#check Set.compl_subset_compl_of_subset
+
+example (h₁ : S ⊆ T) : Tᶜ ⊆ Sᶜ :=
+  Set.compl_subset_compl.2 h₁
 
 -- Exercise 2.5 (Master)
 example (S : Set α) : Sᶜᶜ = S := by
-  sorry
+  ext s
+  rw [mem_compl_iff Sᶜ s, mem_compl_iff S s]
+  push_neg
+  rfl
+
+/-
+Side remark: how exactly does `rw` match and do we need arguments?
+-/
+
+example (S : Set α) : Sᶜᶜ = S := by
+  ext s
+  rw [mem_compl_iff] -- this infers arguments `Sᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `S s` for `mem_compl_iff` and matches once
+  push_neg
+  rfl
+
+example (S : Set α) : Sᶜᶜᶜ = Sᶜ := by
+  ext s
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜ s` for `mem_compl_iff` and matches *twice*
+  push_neg
+  rfl
+
+example (S : Set α) : Sᶜᶜᶜᶜ = Sᶜᶜ := by
+  ext s
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  push_neg
+  rfl
+
+example (S : Set α) : Sᶜᶜᶜᶜ = Sᶜᶜ := by
+  ext s
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜ s` for `mem_compl_iff` and matches *twice*
+  push_neg
+  rfl
+
+example (S : Set α) : Sᶜᶜᶜᶜ = Sᶜᶜ := by
+  ext s
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜ s` for `mem_compl_iff` and matches *twice*
+  rw [mem_compl_iff] -- this infers arguments `Sᶜ s` for `mem_compl_iff` and matches *twice*
+  push_neg
+  rfl
+
+example (S : Set α) : Sᶜᶜ =  Sᶜᶜᶜᶜ := by
+  ext s
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜᶜ s` for `mem_compl_iff` and matches once
+  rw [mem_compl_iff] -- this infers arguments `Sᶜ s` for `mem_compl_iff` and matches once
+  push_neg
+  rfl
+
+example (S : Set α) : Sᶜᶜᶜᶜ = Sᶜᶜ := by
+  ext s
+  repeat rw [mem_compl_iff] -- this reduces it all the way until no `_ ∈ _ᶜ` remains
+  push_neg
+  rfl
 
 -- Exercise 2.6
 lemma compl_subset_compl (S T : Set α) : Tᶜ ⊆ Sᶜ ↔ S ⊆ T  := by
-  sorry
+  constructor
+  · intro h
+    have := compl_subset_compl_of_subset h
+    rw [compl_compl, compl_compl] at this
+    exact this
+  · intro h
+    apply compl_subset_compl_of_subset
+    exact h
+
+example (S T : Set α) : Tᶜ ⊆ Sᶜ ↔ S ⊆ T  := 
+  ⟨fun h₁ => compl_compl S ▸ compl_compl T ▸ compl_subset_compl_of_subset h₁,
+  compl_subset_compl_of_subset⟩
 
 -- Exercise 2.7 (Master)
 example (h : S ⊆ T) {x : α} (hx : x ∈ Tᶜ) : x ∈ Sᶜ := by
-  sorry
+  rw [mem_compl_iff] at *
+  intro xs 
+  have xt := h xs
+  contradiction
+
+example (h : S ⊆ T) {x : α} (hx : x ∈ Tᶜ) : x ∈ Sᶜ :=
+  fun xs => hx (h xs)
 
 -- Exercise 2.8 (Master)
 example {R : Set α} (h₁ : R ⊆ S) (h₂ : S ⊆ T) : Tᶜ ⊆ Rᶜ := by
-  sorry
+  apply compl_subset_compl_of_subset
+  exact Subset.trans h₁ h₂ 
+
+example (R S T : Set α) (h₁ : R ⊆ S) (h₂ : S ⊆ T) : Tᶜ ⊆ Rᶜ :=
+  compl_subset_compl_of_subset (Subset.trans h₁ h₂)
 
 -- Exercise 2.9
 example (x : α) (S : Set α) : x ∈ Sᶜ ↔ (x ∈ S → False) := by
-  sorry
+  rfl
 
 end P03S01B02
