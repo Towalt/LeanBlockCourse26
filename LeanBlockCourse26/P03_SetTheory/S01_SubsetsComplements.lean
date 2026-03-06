@@ -52,7 +52,7 @@ We can scope these shared arguments through a `namespace`.
 
 namespace sharedArgumentExample
 
-variable (P R S : Prop) {P : Prop}
+variable {P : Prop} (R S : Prop)
 
 theorem implicit_argument' (p : P) : P := p
 
@@ -87,8 +87,6 @@ or by opening the namespace with `open Set`.
 -/
 
 variable {α : Type*}
-
-#check Set
 
 /-
 A `Set` in mathlib is just a predicate `α → Prop`.
@@ -125,12 +123,14 @@ example (x : α) (S : Set α) (h : x ∈ S) : Nonempty S := ⟨x, h⟩
 -- `{x}` constructs the set containing `x`
 lemma mem_singleton_iff {x y : α} : x ∈ ({y} : Set α) ↔ x = y :=  by rfl
 
--- `rfl` tactic works but term `rfl` does not because the tactic,
--- can invoke some trivial statements like `Iff.intro`
+-- Both sides are definitionally equal (`x ∈ ({y} : Set α)` unfolds to `x = y`),
+-- so the `rfl` tactic closes this via `Iff.rfl`. Term mode `rfl` only proves
+-- `a = a`, not `a ↔ a`, so it does not work directly.
 example {x y : α} : x ∈ ({y} : Set α) ↔ x = y := by
   apply Iff.intro <;> intro h <;> exact h
 
--- You should probably just use `Set.singleton` to define a singleton set
+-- The `: Set α` annotation disambiguates `{y}` from other set-like types (e.g. `Finset`);
+-- `Set.singleton y` is an unambiguous alternative that does not need it
 example {x y : α} : x ∈ Set.singleton y ↔ x = y := by rfl
 
 -- `{x, y}` constructs the set containing two elements `x` and `y`
@@ -240,7 +240,7 @@ example {R : Set α} (h₁ : S ⊂ T) (h₂ : T ⊆ R) : S ⊂ R := by
   sorry
 
 -- Exercise 1.6 (Master)
-example : ∃ T, T ⊆ S := by
+example : ∃ U : Set α, U ⊆ S := by
   sorry
 
 end P03S01B01
