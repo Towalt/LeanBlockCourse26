@@ -164,7 +164,7 @@ variable {α : Type} (p q : α → Prop)
 
 -- Exercise 1.1
 
--- We can grind through this ourselfs ...
+-- We can grind through this ourselves ...
 example : (∀ x : α, p x ∧ q x) ↔ ((∀ x : α, p x) ∧ (∀ x : α, q x)) := by
   constructor
   · intro h
@@ -181,7 +181,7 @@ example : (∀ x : α, p x ∧ q x) ↔ ((∀ x : α, p x) ∧ (∀ x : α, q x)
     have qx := h₂ x
     exact ⟨px, qx⟩
 
--- ... or have lean do it for us using the `grind` tactic ...
+-- ... or have Lean do it for us using the `grind` tactic ...
 example : (∀ x : α, p x ∧ q x) ↔ ((∀ x : α, p x) ∧ (∀ x : α, q x)) := by
   grind
 

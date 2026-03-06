@@ -20,7 +20,7 @@ This module introduces how to work with compound propositions:
 - Disjunction (`OR`, `∨`)
 - Equivalence (`↔`) is (essentially but not exactly) just a `(_ → _) ∧ (_ → _)`
 
-All three are right-associative. `↔` is non-associative and cannot be chained
+Both `∧` and `∨` are right-associative. `↔` is non-associative and cannot be chained
 without explicit brackets (use `trans` or `TFAE` instead).
 
 Key tactics:
@@ -274,7 +274,7 @@ example (P Q R : Prop) (h₁ : P → Q) (h₂ : P → R) : P → (Q ∧ R) :=
 - `tac <;> tac'` runs `tac` on the main goal and `tac'` on each produced goal.
 
 They are respectively used around 150, 600, and 150 times in mathlib
-(`<;>` usage is not tracked separately).
+(for `repeat`, `all_goals`, and `try`; `<;>` usage is not tracked separately).
 -/
 
 -- We have seen this example before ...
@@ -307,7 +307,7 @@ example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
   constructor
   all_goals    -- This is needed since otherwise `try exact p` would only try to match goal 1
     try exact p  -- Here the `try` is required ...
-    try exact q  -- ... and here of course the `try` is superfluous,
+    try exact q  -- ... and here of course the `try` is superfluous, since `exact q` succeeds
 
 -- Testing the boundaries
 
@@ -356,7 +356,7 @@ example (P Q : Prop) (h : P ∧ Q) : Q ∧ P := by
 Basically: chained `<;>` is the same as an indented `all_goals` block.
 
 * `all_goals` applies to all goals but fails if the tactic does not fit one of them
-* `repeat` applies to the current goal only and stops on first failure
+* `repeat` applies `tac` until first failure, moving on to the next goal if it succeeds, and does not fail
 * `all_goals` combined with `try` applies to all goals and does not fail
 -/
 
@@ -386,13 +386,13 @@ theorem goal_or_apply (P Q : Prop) (p : P) : P ∨ Q := by
 --   apply Or.inr
 --   ... now we are stuck
 
--- But we could have argued forward here ..
+-- But we could have argued forward here ...
 theorem goal_or_exact (P Q : Prop) (p : P) : P ∨ Q := by
   exact Or.inl p
 
 #print goal_or_exact -- also gives `Or.inl p`
 
--- .. which also gives the term mode proof.
+-- ... which also gives the term mode proof.
 theorem goal_or_term (P Q : Prop) (p : P) : P ∨ Q := Or.inl p
 
 #print goal_or_term -- also gives `Or.inl p`
@@ -571,7 +571,7 @@ theorem and_or_rintro (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R := by
 example (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R :=
   fun a ↦ Or.casesOn a (fun h ↦ And.casesOn h fun p _ ↦ Or.inl p) fun r ↦ Or.inr r
 
--- .. which we can simplify to ...
+-- ... which we can simplify to ...
 example (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R :=
   fun a ↦ Or.casesOn a (fun ⟨p, _⟩ ↦ Or.inl p) fun r ↦ Or.inr r
 
@@ -875,6 +875,7 @@ AND – use `⟨ ⟩` with `,`
 OR  – use `( )` with `|`
 -/
 
+-- Exercise 3.1
 -- Prove the associativity of disjunction: `(P ∨ Q) ∨ R ↔ P ∨ (Q ∨ R)`.
 example (P Q R : Prop) : (P ∨ Q) ∨ R ↔ P ∨ (Q ∨ R) := by
   constructor
@@ -886,11 +887,12 @@ example (P Q R : Prop) : (P ∨ Q) ∨ R ↔ P ∨ (Q ∨ R) := by
     · right; right; exact r
 
   -- The reverse direction `.mpr`
-  · rintro (p | q | r)  -- no second pair of brackets needed here because `|` right  associates
+  · rintro (p | q | r)  -- no second pair of brackets needed here because `|` right associates
     · left; left; exact p
     · left; right; exact q
     · right; exact r
 
+-- Exercise 3.2
 -- Prove that `OR` distributes over `AND` in both directions.
 example (P Q R : Prop) : (P ∧ Q) ∨ R ↔ (P ∨ R) ∧ (Q ∨ R) := by
   constructor
@@ -911,6 +913,7 @@ example (P Q R : Prop) : (P ∧ Q) ∨ R ↔ (P ∨ R) ∧ (Q ∨ R) := by
     · right; exact r
     · right; exact r
 
+-- Exercise 3.2 (alt)
 -- We can be slightly more clever in the `.mp` case with `all_goals`;
 -- `rintro _ | _` creates two sub-goals, each of which has two sub-goals
 -- of its own through constructor, giving a total of four sub-goals

@@ -392,7 +392,7 @@ example (P Q : Prop) (h₁ : P ↔ Q) (p : P) : Q := by
   rw [h₁] at p -- note that this only replaces the type `P` and does not rename the variable `p`
   assumption   -- or `exact p`
 
--- If you *reaaally* wanted to rename a variable, use `import Mathlib.Tactic.Rename`
+-- `rename'` (from `Mathlib.Tactic.Rename`, already imported) lets you rename hypotheses
 example (P Q : Prop) (h₁ : P ↔ Q) (p : P) : Q := by
   rw [h₁] at p -- note that this only replaces the type `P` and does not rename the variable `p`
   rename' p => q
@@ -581,7 +581,6 @@ Around 100,000 proofs out of 320,000 in mathlib are written in tactic mode,
 though this includes proofs of minor facts where term mode is more appropriate.
 -/
 
--- This is `imp_intro` in Lean (Init.Core)
 lemma id_proof (P Q : Prop) (p : P) (q : Q) : P := by
   assumption -- or `exact p`
 
@@ -690,8 +689,8 @@ example (P Q R S : Prop) (h₁ : P → Q) (h₂ : Q → R) (h₃ : R → S) : P 
 example (P Q R : Prop) (h₁ : P → Q → R) (h₂ : P → Q) : P → R :=
   fun p => (h₁ p) (h₂ p)
 
--- `let` in fact is *not* a tactic but just a core lean component that defines
--- so it is possible to use this in term mode!
+-- `let` in fact is *not* a tactic but just a core Lean construct that defines
+-- local bindings, so it is possible to use this in term mode!
 example (P Q R : Prop) (h₁ : P → Q → R) (h₂ : P → Q) : P → R :=
   fun p =>
   let q := h₂ p

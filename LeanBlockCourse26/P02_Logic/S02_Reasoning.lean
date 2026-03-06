@@ -35,7 +35,7 @@ embraces calling everything a `theorem`.
 A *Fact* is (usually) a cleanly separate sub-statement in the
 proof of a bigger *Theorem* that is not worth abstracting into
 its own *Lemma* since there is no expectation it will be used
-in any other proofs besides this one specific one.
+in any other proofs besides this particular one.
 
 This is remarkably similar to the `DRY` (Do Not Repeat Yourself)
 principle in coding: if a block of code is only used in this one
@@ -203,9 +203,9 @@ example (A B C D E F G H I : Prop)
 
 Enables explicit backward reasoning by declaring intermediate goals:
 
-1. Declares a subgoal that would suffice to prove the original goal
-2. Once proven, provides access to the subgoal proof via `this`
-3. Maintains goal context for clearer proof structuring
+1. Declares a proposition that would suffice to prove the current goal
+2. In the `by` block, that proposition is available as `this` to prove the original goal
+3. Then opens a new subgoal to actually prove that proposition
 
 This tactic is used around 3,100 times in mathlib. But it is very nice
 in that it mimics the human language "it suffices to show that ... because ...".
@@ -223,8 +223,8 @@ example (P Q R : Prop) (h₁ : P → Q) (h₂ : Q → R) (p : P) : R := by
   exact h₁ p
 
 /-
-Unlike `have`, the tactic `suffices` does not support `:=` for its
-sub-proof, i.e., it always needs `by` to open a tactic block.
+Unlike `have`, the tactic `suffices` does not support `:=` for its sub-proof.
+It uses `by` for tactic mode or `from` for term mode (e.g., `suffices q : Q from h₂ q`).
 -/
 
 -- Compare with equivalent `apply`
@@ -280,9 +280,8 @@ the start of a sub-proof (`let` and `have` use it, `refine` and
 syntax, another does not necessarily allow the same, so the
 following are all *invalid* for `suffices`:
 
-* suffices Q                   -- just leave argument open
-* suffices Q by ?_             -- leave an intentional gap
-* suffices Q := h₂ this        -- use term mode
+* suffices Q                   -- just leave argument open (no `by` or `from`)
+* suffices Q := h₂ this        -- use `:=` for term mode (`suffices Q from h₂ this` does work)
 
 ## Whitespace (indentation and newlines)
 
