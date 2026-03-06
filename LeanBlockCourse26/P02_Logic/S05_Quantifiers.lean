@@ -92,6 +92,11 @@ example : ∃ n, n = 2 := by
 
 #print use_example
 
+/-
+Note that `use` is not necessarily a finishing tactic!
+It will try to close as much of your goal as possible,
+but can still leave part of it open.
+-/
 example (m : ℕ) (h : m = 2) : ∃ n, n = m := by
   use 2
   exact h.symm
@@ -199,20 +204,78 @@ example : (∃ x, p x ∧ q x) → (∃ x, p x) ∧ (∃ x, q x) := by
 
 -- Exercise 1.4
 -- Hint: use the `choose` tactic
-example (R : α → α → Prop) (h : ∀ x, ∃ y, R x y) : ∃ f : α → α, ∀ x, R x (f x) := by
+example (R : α → α → Prop) (h : ∀ x, ∃ y, R x y) :
+    ∃ f : α → α, ∀ x, R x (f x) := by
   choose f hf using h
   use f
 
 -- Exercise 1.5 (Master)
--- Note that this introduces the cartesian product of two types `α × β`
-example {β} (Y : Type) (r : β → Prop)
+-- Note that this introduces the (cartesian) product of two types `α × β`
+example {β} (r : β → Prop)
     (h₁ : ∃ x, p x) (h₂ : ∃ y, r y) : ∃ z : α × β, p z.1 ∧ r z.2 := by
   obtain ⟨x, px⟩ := h₁
   obtain ⟨y, qy⟩ := h₂
   use ⟨x, y⟩
 
+/-
+Hovering over `×` and ctrl / cmd clicking leads is to `Prod` which is just
+
+```
+structure Prod (α : Type u) (β : Type v) where
+  mk ::
+  fst : α
+  snd : β
+```
+
+So we could in fact have also used `z.fst` and `z.snd` instead of `z.1` and `z.2`.
+-/
+
+-- This uses an explicit call to the (ordered) constructor method `Prod.mk` ...
+example {β} (r : β → Prop)
+    (h₁ : ∃ x, p x) (h₂ : ∃ y, r y) : ∃ z : α × β, p z.fst ∧ r z.snd := by
+  obtain ⟨x, px⟩ := h₁
+  obtain ⟨y, qy⟩ := h₂
+  use Prod.mk x y -- This comes from the `mk::`
+
+-- ... but you can also use `{... := ..., ...}` notation to explicitly
+-- construct your instance if you remember the attribute names `fst` and `snd`...
+example {β} (r : β → Prop)
+    (h₁ : ∃ x, p x) (h₂ : ∃ y, r y) : ∃ z : α × β, p z.fst ∧ r z.snd := by
+  obtain ⟨x, px⟩ := h₁
+  obtain ⟨y, qy⟩ := h₂
+  use {snd := y, fst := x} -- this (probably) also just calls `Prod.mk x y`
+
+/-
+... but note that we have the `⟨...⟩` notation that automatically
+invokes the ordered constructor for you, so you do not need to remember
+the constructor name (`Prod.mk`, `And.intro`, `Iff.intro`, ...) ...
+-/
+example {β} (r : β → Prop)
+    (h₁ : ∃ x, p x) (h₂ : ∃ y, r y) : ∃ z : α × β, p z.fst ∧ r z.snd := by
+  obtain ⟨x, px⟩ := h₁
+  obtain ⟨y, qy⟩ := h₂
+  use ⟨x, y⟩ -- this just calls `Prod.mk x y`
+
+/-
+... but (I think) `Prod.mk` in particular also accepts `(...)` notation
+since this aligns with common notation for tuples ...
+-/
+example {β} (r : β → Prop)
+    (h₁ : ∃ x, p x) (h₂ : ∃ y, r y) : ∃ z : α × β, p z.fst ∧ r z.snd := by
+  obtain ⟨x, px⟩ := h₁
+  obtain ⟨y, qy⟩ := h₂
+  use (x, y)
+
+-- ... but note that this notation is not accepted by other structures like `And`.
+example {β} (r : β → Prop)
+    (h₁ : ∃ x, p x) (h₂ : ∃ y, r y) : ∃ z : α × β, p z.fst ∧ r z.snd := by
+  obtain ⟨x, px⟩ := h₁
+  obtain ⟨y, qy⟩ := h₂
+  exact ⟨(x, y), ⟨px, qy⟩⟩ -- here `(qx, qy)` would *not* be accepted!
+
 -- Exercise 1.6 (Master)
-example (α : Type) (p q : α → Prop) : (∃ x : α, p x ∨ q x) ↔ ((∃ x : α, p x) ∨ (∃ x : α, q x)) := by
+example (α : Type) (p q : α → Prop) :
+    (∃ x : α, p x ∨ q x) ↔ ((∃ x : α, p x) ∨ (∃ x : α, q x)) := by
   constructor
   · intro h
     obtain ⟨x, px | qx⟩ := h
