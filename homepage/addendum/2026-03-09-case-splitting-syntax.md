@@ -1,10 +1,10 @@
 ---
-title: "Case splitting and naming syntax"
+title: "Naming in case splits"
 parent: Addendum
 nav_order: 0
 ---
 
-# Case splitting and naming syntax
+# Naming in case splits
 {: .no_toc }
 
 *March 9, 2026 · `P02–P05`*
@@ -13,14 +13,7 @@ nav_order: 0
 
 When you split a proof into cases — via `induction`, `cases`, `split`, `by_cases`, or destructuring a hypothesis — you need two things: **focus on a branch** and **name the new variables**. Lean offers several mechanisms, and they overlap. This note sorts out what exists, what to prefer, and what to avoid.
 
-- TOC
-{:toc}
-
-## The three focusing mechanisms
-
-After any tactic that creates multiple goals, you need to select which goal to work on.
-
-### `·` (focus dot)
+## `·` (focus dot)
 
 Works after any multi-goal tactic. Positional (takes goals in order). Does not name anything.
 
@@ -31,7 +24,7 @@ induction xs
   ...
 ```
 
-### `case tag args =>`
+## `case tag args =>`
 
 Selects a goal by its **tag name** (the constructor or case name). Also renames inaccessible hypotheses.
 
@@ -45,7 +38,7 @@ This works after any goal-creating tactic — `induction`, `cases`, `split`, `co
 
 The `next args =>` syntax is shorthand for `case _ args =>` (wildcard tag, positional). It exists but offers no advantage over `case` with an explicit tag.
 
-### `with | tag args =>`
+## `with | tag args =>`
 
 Part of the `induction` / `cases` syntax itself. Dispatches all branches inline.
 
@@ -57,7 +50,7 @@ induction xs with
 
 Unlike `case`, this is **structural**: Lean warns about missing cases. It is the Mathlib-preferred style for `induction` and `cases`.
 
-## Destructuring hypotheses: `rcases`, `obtain`, `rintro`
+## `rcases`, `obtain`, `rintro`
 
 These use a **pattern language** with `⟨⟩` for structures and `|` for alternatives:
 
