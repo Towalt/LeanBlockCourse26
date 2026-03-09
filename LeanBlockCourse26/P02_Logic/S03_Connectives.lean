@@ -4,11 +4,10 @@ https://adam.math.hhu.de/#/g/hhu-adam/robo
 https://adam.math.hhu.de/#/g/trequetrum/lean4game-logic
 -/
 
+import LeanBlockCourse26.P02_Logic.S02_Reasoning
 import Batteries.Tactic.Trans
-import Mathlib.Tactic.Basic
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.TFAE
-import Mathlib.Logic.Basic
 import ProofGolf
 
 /-
@@ -53,33 +52,33 @@ To prove `P ∧ Q`, we need to prove both `P` and `Q`. We can:
 -- produces valid Lean code. Without `·` focusing, the proof block simply
 -- moves on to the next open goal after each tactic closes the current one.
 -- Note that the order matters though, so `exact q; exact p` does not work.
-theorem goal_and_apply (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
+theorem example_and_goal_apply (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
   apply And.intro
   exact p
   exact q
 
-#print goal_and_apply -- produces `⟨p, q⟩`, we will see this notation in a second
+#print example_and_goal_apply -- produces `⟨p, q⟩`, we will see this notation in a second
 
 -- The notation hides the actual term mode proof
 example (P Q : Prop) (p : P) (q : Q) : P ∧ Q := And.intro p q
 
 -- This is the recommended and much more readable syntax!
 -- But note that we still need to respect the order.
-theorem goal_and_apply' (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
+theorem example_and_goal_focus (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
   apply And.intro
   · exact p -- The `\.` produces · and focuses on the next goal
   · exact q
 
-#print goal_and_apply' -- also produces `⟨p, q⟩`
+#print example_and_goal_focus -- also produces `⟨p, q⟩`
 
 -- In order not to have to remember `And.intro` (and the equivalent names
 -- for any other structures in the future), we can use the `constructor` tactic
-theorem goal_and_constructor (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
+theorem example_and_goal_constructor (P Q : Prop) (p : P) (q : Q) : P ∧ Q := by
   constructor
   · exact p
   · exact q
 
-#print goal_and_constructor -- also produces `⟨p, q⟩`
+#print example_and_goal_constructor -- also produces `⟨p, q⟩`
 
 -- Looking at the actual term modes already introduces the angle bracket
 -- notation, which we can also use: `⟨p, q⟩` is notation for `And.intro p q`
@@ -207,17 +206,20 @@ example (P Q : Prop) : (P ∧ Q) → P := by
   exact p
 
 -- This is `And.left` in Lean (Init.Prelude)
-theorem and_left (P Q : Prop) : (P ∧ Q) → P := by
+example (P Q : Prop) : (P ∧ Q) → P := by
   intro ⟨p, _⟩
   exact p
 
 -- This also works nicely in term mode ...
 example (P Q : Prop) : (P ∧ Q) → P := fun ⟨p, _⟩ => p
 
--- ... which is just nicer notation for the term given by `#print and_left`
+-- ... which is just nicer notation for the underlying term
 example (P Q : Prop) : (P ∧ Q) → P :=
   fun h => match h with
     | ⟨p, _⟩ => p
+
+#check @And.left
+#check @And.right
 
 -- Note that this is different from
 example (P Q : Prop) : P → Q → P := fun p _ => p
@@ -374,11 +376,11 @@ To prove P ∨ Q, we need to prove either P or Q. We can:
 #check Or.inr     -- takes a proof `(b : Q)` and produces `(P ∨ Q)`
 
 -- This is `Or.inl` in Lean (Init.Prelude)
-theorem goal_or_apply (P Q : Prop) (p : P) : P ∨ Q := by
+theorem example_or_goal_apply (P Q : Prop) (p : P) : P ∨ Q := by
   apply Or.inl
   exact p
 
-#print goal_or_apply -- gives `Or.inl p`
+#print example_or_goal_apply -- gives `Or.inl p`
 
 -- Again note that `apply` is destructive since `apply Or.inr` here
 -- would have left us with a goal that cannot be proven from the assumptions.
@@ -387,22 +389,22 @@ theorem goal_or_apply (P Q : Prop) (p : P) : P ∨ Q := by
 --   ... now we are stuck
 
 -- But we could have argued forward here ...
-theorem goal_or_exact (P Q : Prop) (p : P) : P ∨ Q := by
+theorem example_or_goal_exact (P Q : Prop) (p : P) : P ∨ Q := by
   exact Or.inl p
 
-#print goal_or_exact -- also gives `Or.inl p`
+#print example_or_goal_exact -- also gives `Or.inl p`
 
 -- ... which also gives the term mode proof.
-theorem goal_or_term (P Q : Prop) (p : P) : P ∨ Q := Or.inl p
+theorem example_or_goal_term (P Q : Prop) (p : P) : P ∨ Q := Or.inl p
 
-#print goal_or_term -- also gives `Or.inl p`
+#print example_or_goal_term -- also gives `Or.inl p`
 
 -- Perhaps more intuitive are the `left` and `right` tactics
-theorem goal_or_tactic (P Q : Prop) (p : P) : P ∨ Q := by
+theorem example_or_goal_tactic (P Q : Prop) (p : P) : P ∨ Q := by
   left
   exact p
 
-#print goal_or_tactic -- also gives `Or.inl p`
+#print example_or_goal_tactic -- also gives `Or.inl p`
 
 /-
 ## Working with OR in a hypothesis
@@ -424,6 +426,8 @@ example (P Q R : Prop) (h : P ∨ Q) (p_to_r : P → R) (q_to_r : Q → R) : R :
 -- ... or even just use term mode.
 example (P Q R : Prop) (h : P ∨ Q) (p_to_r : P → R) (q_to_r : Q → R) : R :=
   Or.elim h p_to_r q_to_r
+
+#check @Or.elim
 
 -- But if we want to get towards what we naturally expect, a case distinction,
 -- we need to use `apply` ...
@@ -560,14 +564,14 @@ example (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R := by
     exact r
 
 -- No single Lean name; this combines `Or.imp_left` (Init.SimpLemmas) with `And.left`
-theorem and_or_rintro (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R := by
+theorem example_and_or_rintro (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R := by
   rintro (⟨p, q⟩ | r)
   · left
     exact p
   · right
     exact r
 
--- `#print and_or_rintro` gives us ...
+-- `#print example_and_or_rintro` gives us ...
 example (P Q R : Prop) : (P ∧ Q) ∨ R → P ∨ R :=
   fun a ↦ Or.casesOn a (fun h ↦ And.casesOn h fun p _ ↦ Or.inl p) fun r ↦ Or.inr r
 
@@ -826,6 +830,8 @@ example (A B C D : Prop) (h₁ : C ↔ D) (h₂ : A ↔ B) (h₃ : A ↔ D) : B 
   rw [h₃] at h₂
   rw [h₂] at h₁
   exact h₁.symm
+
+#check @Iff.symm
 
 example (A B C D : Prop) (h₁ : C ↔ D) (h₂ : A ↔ B) (h₃ : A ↔ D) : B ↔ C := by
   rw [h₁, h₃.symm, h₂]

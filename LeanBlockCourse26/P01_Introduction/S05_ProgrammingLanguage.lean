@@ -20,7 +20,7 @@ Python: message = "Hello, World!"    # Dynamic typing
 C:      const char* hello = "Hello, World!";  // Static typing
 -/
 
-def printHello : IO Unit := -- 'IO Unit' is an Explicit type for IO operations
+def printHello : IO Unit := -- 'IO Unit' is an explicit type for IO operations
  IO.println hello
 
 #check printHello -- tells us this is of type 'IO Unit'
@@ -29,8 +29,8 @@ def printHello : IO Unit := -- 'IO Unit' is an Explicit type for IO operations
 
 /-
 ## Basic Arithmetic
-Lean uses natural numbers (Nat) by default for integers. Functions can be defined
-with explicit type annotations, similar to C but with a different syntax.
+Lean uses natural numbers (Nat) by default for numeric literals. Functions can be
+defined with explicit type annotations.
 -/
 
 def add (x y : Nat) : Nat := x + y
@@ -130,7 +130,7 @@ def inferredList := [1, 2, 3]   -- Inferred as List Nat
 
 -- Type inference for functions
 def inferredAdd (x : Nat) y := x + y          -- type of `y` and of output is inferred as `Nat`
-def inferredConcat (x : String) y := x ++ y   -- type of `y` and output is inferred as `String`
+def inferredConcat (x : String) y := x ++ y   -- type of `y` and of output is inferred as `String`
 
 -- Sometimes explicit types are clearer or necessary
 def explicitSubNat (x y : Nat) := x - y  -- Forces `Nat` arithmetic
@@ -178,10 +178,10 @@ def implicitSub''' (x : Int) (y : Nat) := x - y -- able to coerce y to Int
 
 def inferredAdd' (x : Nat) (y : Int) := x + y
 
-def coercedOutputAdd (x y : Nat) : Int := x - y
+def coercedOutputSub (x y : Nat) : Int := x - y
 
-#check coercedOutputAdd 2 3 -- Int (function uses Int subtraction, coerces Nat inputs)
-#eval coercedOutputAdd 2 3  -- 2 - 3 = -1 since x and y are both first coerced to Int
+#check coercedOutputSub 2 3 -- Int (function uses Int subtraction, coerces Nat inputs)
+#eval coercedOutputSub 2 3  -- 2 - 3 = -1 since x and y are both first coerced to Int
 
 /-
 ## Data Structures
@@ -307,18 +307,27 @@ def idGeneric' {T : Type} (n : T) : T := n -- curly brackets make T implicit
 -- We can prove that idNat and idGeneric applied to Nat return the same output!
 def idGeneric_Nat_eq_idNat : idGeneric Nat = idNat := rfl
 
--- doesn't really matter if we use 'def' or 'theorem' here
+-- `theorem` is an alias for `def` (with a subtle difference in transparency
+-- that we will discuss later). `lemma` is a synonym for `theorem`.
 theorem idGeneric_Nat_eq_idNat' : idGeneric Nat = idNat := rfl
+
+-- `example` is an unnamed version — it type-checks but adds no name to the
+-- environment. We will use `example` extensively for exercises.
+example : idGeneric Nat = idNat := rfl
 
 -- This does not work because not only the type is checked (Nat)
 -- but also the specific instance, which is not the same (0 != n)
 -- example : idGeneric Nat = constZero := rfl
 
--- A constructive proof of the type of the statement `P → P`
+-- A constructive proof of the statement `P → P`
 def identity_proof (P : Prop) (p : P) : P := p
 
+-- Same proof as a theorem (in tactic mode)
 theorem identity_proof' (P : Prop) (p : P) : P := by
-  exact p -- same proof in tactic mode
+  exact p
+
+-- Same proof as an unnamed example
+example (P : Prop) (p : P) : P := p
 
 -- Blurring the lines between programming a function and writing a proof:
 -- How to prove P ∧ Q → P
@@ -342,6 +351,6 @@ theorem and_left_tactic (P Q : Prop) : P ∧ Q → P := by
 example (P Q : Prop) : P ∧ Q → P := by sorry
 
 -- axioms don't require proofs!
--- but this one is unnecessary, since it is inferred by our type system
+-- but this one is unnecessary, since it is provable within our type system
 axiom and_left_axiom (P Q : Prop) : P ∧ Q → P
 

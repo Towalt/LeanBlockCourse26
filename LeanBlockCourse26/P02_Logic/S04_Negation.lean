@@ -4,12 +4,10 @@ https://adam.math.hhu.de/#/g/hhu-adam/robo
 https://adam.math.hhu.de/#/g/trequetrum/lean4game-logic
 -/
 
-import Mathlib.Tactic.Basic
+import LeanBlockCourse26.P02_Logic.S03_Connectives
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Push
-import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Tauto
-import ProofGolf
 
 /-
 # Negation and Classical Logic
@@ -121,13 +119,14 @@ It is used around 150 times in mathlib.
 -/
 
 -- This is `False.elim` in Lean (Init.Prelude)
-theorem exfalso_example (P : Prop) (h : False) : P := by
+theorem example_exfalso_tactic (P : Prop) (h : False) : P := by
   exfalso    -- Changes goal to False
   exact h    -- Uses the False hypothesis
 
-#print exfalso_example  -- Under the hood this uses `False.elim h`
+#print example_exfalso_tactic  -- Under the hood this uses `False.elim h`
+#check @False.elim
 
-#print axioms exfalso_example -- We are still not using classical logic!
+#print axioms example_exfalso_tactic -- We are still not using classical logic!
 
 /-
 ## The `push_neg` Tactic (Classical logic)
@@ -142,11 +141,12 @@ Normalizes negated expressions by pushing negation inward:
 
 -- This is `Classical.not_not.mp` in Lean (Init.Classical)
 -- `not_not` is the `@[simp]` alias for this, also in Init.Classical
-theorem push_neg_example (P : Prop) : ¬¬P → P := by
+theorem example_push_neg (P : Prop) : ¬¬P → P := by
   push_neg
   exact id
 
-#print axioms push_neg_example  -- This does use the axiom of excluded middle (classical logic)
+#check @Classical.not_not
+#print axioms example_push_neg  -- This does use the axiom of excluded middle (classical logic)
 
 /-
 ## Exercise Block B01
@@ -156,35 +156,28 @@ Related: https://www.youtube.com/watch?v=aMxcAaR0oHU
 
 -- Exercise 1.1a
 -- This is `not_not_intro` in Lean (Init.Core), also `Classical.not_not.mpr` / `not_not.mpr`
+#check @not_not_intro
 -- Prove the statement using `push_neg`
-theorem nnp_of_p_exercise_push_neg (P : Prop) : P → ¬¬P := by
+example (P : Prop) : P → ¬¬P := by
   intro p
   push_neg
   exact p
-
-#print axioms nnp_of_p_exercise_push_neg
 
 -- Exercise 1.1b
 -- Prove the statement without `push_neg` and without classical
 -- logic, i.e., use `#print axioms` to make sure you are not
 -- dependent on any (`Classical.`) axioms!
-theorem nnp_of_p_exercise_fun (P : Prop) : P → ¬¬P := by
+example (P : Prop) : P → ¬¬P := by
   intro p
   intro np
   exact np p
 
-#print axioms nnp_of_p_exercise_fun
+example (P : Prop) : P → ¬¬P := fun p np => np p
 
-theorem nnp_of_p_exercise_fun_term (P : Prop) : P → ¬¬P := fun p np => np p
-
-#print axioms nnp_of_p_exercise_fun_term
-
-theorem nnp_of_p_exercise_contradiction (P : Prop) : P → ¬¬P := by
+example (P : Prop) : P → ¬¬P := by
   intro p
   intro np
   contradiction
-
-#print axioms nnp_of_p_exercise_contradiction
 
 -- Exercise 1.2
 example (P Q : Prop) (p : ¬¬P) (f : P → Q) : ¬¬Q := by
@@ -247,25 +240,25 @@ Enables proof by contradiction in classical logic:
 -/
 
 -- We have already seen this with a `push_neg`...
-theorem by_contra_example_push_neg (P : Prop) : ¬¬P → P := by
+theorem example_by_contra_push_neg (P : Prop) : ¬¬P → P := by
   push_neg
   exact id
 
 -- ... but we can also resolve this with `by_contra`...
-theorem by_contra_example (P : Prop) : ¬¬P → P := by
+theorem example_by_contra (P : Prop) : ¬¬P → P := by
   intro nnp
   by_contra np
   contradiction
 
-theorem by_contra_example' (P : Prop) : ¬¬P → P := by
+theorem example_by_contra' (P : Prop) : ¬¬P → P := by
   intro nnp
   by_contra np
   exact nnp np
 
 -- ... and looking at the axioms we see both use `Classical.choice`!
 
-#print axioms by_contra_example_push_neg -- propext, Classical.choice, Quot.sound
-#print axioms by_contra_example -- propext, Classical.choice, Quot.sound
+#print axioms example_by_contra_push_neg -- propext, Classical.choice, Quot.sound
+#print axioms example_by_contra -- propext, Classical.choice, Quot.sound
 
 /-
 ## Classical Reasoning with `by_cases`
@@ -283,6 +276,7 @@ This tactic is used around 4,600 times in mathlib.
 example (P : Prop) : P ∨ ¬P := Classical.em P
 
 #print Classical.em -- This has an actual proof ...
+#check @Classical.em
 
 #print axioms Classical.em -- ... but it uses `Classical.choice` ...
 
@@ -336,9 +330,10 @@ accessing classical axioms when needed.
 -- Exercise 2.1
 -- This is `mt` (modus tollens) in Lean (Init.Core)
 -- `Function.mt` in Mathlib.Logic.Basic enables dot notation `h.mt`
+#check @mt
 -- Prove this constructively, i.e., using intuitionistic logic
 -- and verify no axioms were used with `#print axioms _`
-theorem exercise_2_1_constructive (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
+example (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
   intro h₁ h₂ h₃
   let hor := h₁ h₃
   contradiction
@@ -350,59 +345,53 @@ example (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
 example (P Q : Prop) : (P → Q) → (¬Q → ¬P) :=
   fun h₁ h₂ p => h₂ (h₁ p)
 
-#print axioms exercise_2_1_constructive -- no axioms used
-
 -- Exercise 2.2
 -- Prove this using classical logic and verify that you
 -- used `Classical.choice` with `#print axioms _`
-theorem exercise_2_2_classical (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
+example (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
   intro pq nq p
   have := Classical.em Q
   rcases this with (q | nq)
   · exact nq q
   · exact nq (pq p)
 
-#print axioms exercise_2_2_classical -- propext, Classical.choice, Quot.sound
-
-#golf theorem exercise_2_2_classical' (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
+#golf example (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
   intro h nq
   by_cases p : P
   · exfalso; exact nq (h p)
   · exact p
 
-#print axioms exercise_2_2_classical' -- propext, Classical.choice, Quot.sound
 -- A neat notational trick: `‹P›` looks for any proof of `P` in your assumptions
-#golf theorem exercise_2_2_classical'' (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
+#golf example (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
   intro _ _
   by_cases P
   · exfalso; exact ‹¬Q› (‹P → Q› ‹P›)
   · exact ‹¬P›
 
 -- `by_contra` is intelligent about not applying `Classical.em` when applied to `¬P`
-theorem exercise_2_2_not_quite_classical (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
+example (P Q : Prop) : (P → Q) → (¬Q → ¬P) := by
   intro pq nq
   by_contra p
   let h := pq p
   contradiction
-
-#print axioms exercise_2_2_not_quite_classical -- no axioms used
 
 /-
 ## Exercise Block B03
 -/
 
 -- Exercise 3.1
+#check @mt
 example (P Q : Prop) : (P → Q) ↔ (¬Q → ¬P) := by
   constructor
-  · exact exercise_2_1_constructive P Q
+  · exact mt
   · intro h p
     by_contra nq
     exact (h nq) p
 
 example (P Q : Prop) : (P → Q) ↔ (¬Q → ¬P) := by
   constructor
-  · exact exercise_2_1_constructive P Q
-  · have h:= exercise_2_1_constructive (¬Q) (¬P)
+  · exact mt
+  · have h := @mt (¬Q) (¬P)
     push_neg at h
     exact h
 
@@ -463,7 +452,7 @@ example (A B C : Prop) : (A ∧ (¬¬C)) ∨ (¬¬B) ∧ C ↔ (A ∧ C) ∨ B �
 example (A B C : Prop) : (A ∧ (¬¬C)) ∨ (¬¬B) ∧ C ↔ (A ∧ C) ∨ B ∧ (¬¬C) := by
   have (D : Prop) :  ¬¬D ↔ D := by -- this is just `not_not` in Lean
     constructor
-    · exact push_neg_example D -- this was the classical part
+    · exact example_push_neg D -- this was the classical part
     · exact fun d nd => nd d   -- this is actually constructive
   rw [this, this]
 

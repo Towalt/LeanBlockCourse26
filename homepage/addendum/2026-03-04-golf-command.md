@@ -1,7 +1,7 @@
 ---
 title: "Proof length"
 parent: Addendum
-nav_order: 9996
+nav_order: 6
 ---
 
 # Measuring proof length

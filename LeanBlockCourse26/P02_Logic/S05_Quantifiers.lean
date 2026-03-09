@@ -4,10 +4,10 @@ https://adam.math.hhu.de/#/g/hhu-adam/robo
 https://adam.math.hhu.de/#/g/trequetrum/lean4game-logic
 -/
 
+import LeanBlockCourse26.P02_Logic.S04_Negation
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Tauto
 
 /-
 # Quantifiers in Lean
@@ -80,7 +80,7 @@ and how to supply one with the `use` tactic. `choose` is used around
 -/
 
 -- To produce a witness of existence we can use the `use` tactic ...
-theorem use_example : ∃ n, n = 2 := by
+theorem example_exists_use : ∃ n, n = 2 := by
   use 2
 
 -- ... but we can also explicitly pass both the element to use
@@ -89,8 +89,9 @@ example : ∃ n, n = 2 := by
   exact ⟨2, rfl⟩
 
 #check Exists -- `use` tactic just wraps `Exists.intro`
+#check @Exists.intro
 
-#print use_example
+#print example_exists_use
 
 /-
 Note that `use` is not necessarily a finishing tactic!
@@ -123,12 +124,14 @@ example : ∀ (X : Type) (P : X → Prop), (∃! (x : X), P x) → ∃ (x : X), 
 
 -- This is `Classical.axiomOfChoice` in Lean (Init.Classical), also `Classical.skolem.mp`
 -- You can "extract" a function from a statement with an ∀∃ statement with `choose`
-theorem choose_function (X : Type) (P : X → X → Prop) (h : ∀ x : X, ∃ y : X, P x y) :
+theorem example_axiom_of_choice (X : Type) (P : X → X → Prop) (h : ∀ x : X, ∃ y : X, P x y) :
     ∃ (f : X → X), ∀ x : X, P x (f x) := by
   choose f hf using h
   use f
 
-#print choose_function -- uses `Classical.choose`
+#print example_axiom_of_choice -- uses `Classical.choose`
+#check @Classical.axiomOfChoice
+#check @Classical.skolem
 
 /-
 ## Function Extensionality
@@ -138,12 +141,15 @@ The `ext` tactic proves function extensionality, reducing a goal `f = g`
 to proving `f x = g x` for arbitrary `x`. It is used around 11,000 times in mathlib.
 -/
 
--- This is `funext` in Lean (Init.Core); `funext_iff` (Init.Ext) provides the biconditional
-theorem func_ext (X Y : Type) (f g : X → Y) (h : ∀ x : X, f x = g x) : f = g := by
+-- This is `funext` in Lean (Init.Core); our version uses explicit args vs implicit
+-- `funext_iff` (Init.Ext) provides the biconditional
+theorem example_funext (X Y : Type) (f g : X → Y) (h : ∀ x : X, f x = g x) : f = g := by
   ext x
   exact h x
 
-#print func_ext
+#print example_funext
+#check @funext
+#check @funext_iff
 
 /-
 ## Exercise Block B01

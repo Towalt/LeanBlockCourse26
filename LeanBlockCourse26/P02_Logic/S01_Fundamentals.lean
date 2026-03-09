@@ -30,12 +30,10 @@ times more implicitly through `rw`, `exact`, `simp`, ...
 -/
 
 -- Simple equality: proves that 42 equals itself
-theorem simple_int_eq : 42 = 42 := by
+example : 42 = 42 := by
   rfl
 
-#check simple_int_eq
-
-theorem simple_int_eq' : (42 = 42 : Prop) := by
+example : (42 = 42 : Prop) := by
   rfl
 
 -- Works with variables: proves that any proposition equals itself
@@ -213,6 +211,8 @@ example (P Q R : Prop) (p : P) (h₁ : P → Q) (h₂ : Q → R) : R := h₂ (h�
 example (P Q R : Prop) (p : P) (h₁ : P → Q) (h₂ : Q → R) : R := by
   exact (h₂ ∘ h₁) p
 
+#check @Function.comp
+
 -- The `<|` operator is a function application operator that binds less tightly
 -- than function application. It lets us avoid parentheses by applying functions
 -- from right to left, so `h₂ <| h₁ p` is equivalent to `h₂ (h₁ p)`.
@@ -254,6 +254,8 @@ example (P : Prop) : P → P := by
 
 -- Also works in term mode
 example (P : Prop) : P → P := id
+
+#check @id
 
 -- `id` itself is actually just lambda function type magic
 example (P : Prop) : P → P := fun p => p
@@ -387,6 +389,8 @@ example (P Q : Prop) (h : P ↔ Q) : P → Q := by
 -- In fact, our statement is just the modus ponens of the assumption `h`
 example (P Q : Prop) (h : P ↔ Q) : P → Q := h.mp
 
+#check @Iff.mp
+
 -- Rewriting in hypotheses with `at`
 example (P Q : Prop) (h₁ : P ↔ Q) (p : P) : Q := by
   rw [h₁] at p -- note that this only replaces the type `P` and does not rename the variable `p`
@@ -398,12 +402,13 @@ example (P Q : Prop) (h₁ : P ↔ Q) (p : P) : Q := by
   rename' p => q
   exact q
 
--- No single Lean name; this combines `Iff.trans` and `Iff.symm` (Init.Core)
-theorem multiple_rewrites (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : R ↔ Q) : P ↔ R := by
+-- Combines `Iff.trans` and `Iff.symm` (Init.Core)
+theorem example_iff_chain_rw (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : R ↔ Q) : P ↔ R := by
   rw [h₁]
   rw [h₂] -- implicit `rfl` call automatically closes `Q ↔ Q` in goal
 
-#print multiple_rewrites -- tells us that `Iff.rfl` is invoked
+#print example_iff_chain_rw -- tells us that `Iff.rfl` is invoked
+#check @Iff.trans
 
 example (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : R ↔ Q) : P ↔ R := by
   rw [h₁, h₂] -- first replaces `P` with `Q`, then `R` with `Q` for `Q ↔ Q`
@@ -457,6 +462,8 @@ example (P Q R : Prop) (h₁ : Q ↔ P) (h₂ : Q ↔ R) : P ↔ R := by
 
 -- `.symm` can also be used in term mode
 example (P Q : Prop) (h : Q ↔ P) : P ↔ Q := h.symm
+
+#check @Iff.symm
 
 -- Example 3: Using the symm tactic to update a hypothesis in place
 example (P Q : Prop) (h : Q ↔ P) : P ↔ Q := by
@@ -521,6 +528,8 @@ example (P Q : Prop) (h : Q ↔ P) : P → Q := by
 example (P Q : Prop) (h : Q ↔ P) : P → Q := by
   exact h.mpr -- but this is cheating since we wanted to use `rw`!
 
+#check @Iff.mpr
+
 -- Exercise 3.3
 -- Given four equivalent propositions in a cycle, prove that the first
 -- implies the last. You will need reverse rewriting (`← h`) or `symm`,
@@ -581,12 +590,12 @@ Around 100,000 proofs out of 320,000 in mathlib are written in tactic mode,
 though this includes proofs of minor facts where term mode is more appropriate.
 -/
 
-theorem id_proof (P Q : Prop) (p : P) (q : Q) : P := by
+theorem example_id_intro (P Q : Prop) (p : P) (q : Q) : P := by
   assumption -- or `exact p`
 
 -- You can print the term mode proof using `#print`, which will show
 -- you that the proof in term mode is just `fun P Q p q ↦ p`
-#print id_proof
+#print example_id_intro
 
 /-
 But it also modified the statement from
@@ -603,48 +612,48 @@ Lean actually takes all the arguments (things to the left of `:`) and
 -/
 
 -- But this does:
-theorem id_proof_term (P Q : Prop) (p : P) (q : Q) : P := p
+theorem example_id_term (P Q : Prop) (p : P) (q : Q) : P := p
 
 -- And this does:
-theorem id_proof_term' : ∀ (P Q : Prop), P → Q → P :=
+theorem example_id_term' : ∀ (P Q : Prop), P → Q → P :=
   fun _ _ p _ => p -- or `fun P Q p q => p`
 
--- Same output (up to renamed variables) as `#print id_proof`
-#print id_proof_term
-#print id_proof_term'
+-- Same output (up to renamed variables) as `#print example_id_intro`
+#print example_id_term
+#print example_id_term'
 -- Let us look at the identity function in various styles.
 
 -- This is `id` in Lean (Init.Prelude)
-theorem identity_tactic_intro (P : Prop) : P → P := by
+theorem example_identity_tactic_intro (P : Prop) : P → P := by
   intro p
   assumption -- or `exact p`
 
-#print identity_tactic_intro -- gives term `fun P p ↦ p`
+#print example_identity_tactic_intro -- gives term `fun P p ↦ p`
 -- Second in tactic mode, but cheating with `id`
-theorem identity_tactic_id (P : Prop) : P → P := by
+theorem example_identity_tactic_id (P : Prop) : P → P := by
   exact id
 
-#print identity_tactic_id  -- gives term `fun P ↦ id`
+#print example_identity_tactic_id  -- gives term `fun P ↦ id`
 -- Third in term mode with a lambda function -- first syntax
-theorem identity_term_lambda (P : Prop) : P → P := fun p => p
+theorem example_identity_term_lambda (P : Prop) : P → P := fun p => p
 
-#print identity_term_lambda -- gives term `fun P p ↦ p`
+#print example_identity_term_lambda -- gives term `fun P p ↦ p`
 -- Third in term mode with a lambda function -- second syntax
 -- Note that the linter prefers `fun` over `λ`
-theorem identity_term_lambda' (P : Prop) : P → P := λ p ↦ p
+theorem example_identity_term_lambda' (P : Prop) : P → P := λ p ↦ p
 
-#print identity_term_lambda' -- gives term `fun P p ↦ p`
+#print example_identity_term_lambda' -- gives term `fun P p ↦ p`
 -- Finally, this is actually just the identity function `id`
-theorem identity_term_id (P : Prop) : P → P := id
+theorem example_identity_term_id (P : Prop) : P → P := id
 
-#print identity_term_id  -- gives term `fun P ↦ id`
+#print example_identity_term_id  -- gives term `fun P ↦ id`
 -- `rfl` confirms these are all truly "the same" ...
-example : identity_term_id = identity_tactic_id := rfl
-example : identity_tactic_intro = identity_term_lambda := rfl
+example : example_identity_term_id = example_identity_tactic_id := rfl
+example : example_identity_tactic_intro = example_identity_term_lambda := rfl
 
 -- ... even these (despite print looking different)!
-example : identity_tactic_intro = identity_tactic_id := rfl
-example : identity_term_id = identity_term_lambda := rfl
+example : example_identity_tactic_intro = example_identity_tactic_id := rfl
+example : example_identity_term_id = example_identity_term_lambda := rfl
 
 -- Sometimes `rw` can be expressed in term mode through `▸`.
 -- So this trivial tactic mode proof ...
@@ -701,7 +710,7 @@ example (P Q R : Prop) (h₁ : P → Q → R) (h₂ : P → Q) : P → R :=
 -- This is `Iff.trans` in Lean (Init.Core)
 -- Try turning this tactic mode proof into term mode, first without using
 -- `#print` and then using it
-theorem challenging_tactic_proof (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : Q ↔ R) : P ↔ R := by
+theorem example_iff_trans_tactic (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : Q ↔ R) : P ↔ R := by
   rw [h₁.symm] at h₂
   exact h₂
 
@@ -709,7 +718,8 @@ theorem challenging_tactic_proof (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : Q ↔ R
 -- example (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : Q ↔ R) : P ↔ R :=
 --   (h₁.symm ▸ h₂)
 
-#print challenging_tactic_proof -- Eq.mp (congrArg (fun _a ↦ _a ↔ R) (propext (Iff.symm h₁))) h₂
+#print example_iff_trans_tactic -- Eq.mp (congrArg (fun _a ↦ _a ↔ R) (propext (Iff.symm h₁))) h₂
+#check @Iff.trans
 
 -- We can just copy paste the result to term mode
 example (P Q R : Prop) (h₁ : P ↔ Q) (h₂ : Q ↔ R) : P ↔ R :=

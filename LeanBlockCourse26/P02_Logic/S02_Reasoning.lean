@@ -4,7 +4,7 @@ https://adam.math.hhu.de/#/g/hhu-adam/robo
 https://adam.math.hhu.de/#/g/trequetrum/lean4game-logic
 -/
 
-import Mathlib.Tactic.Basic
+import LeanBlockCourse26.P02_Logic.S01_Fundamentals
 
 /-
 # Reasoning Tactics
@@ -55,7 +55,7 @@ It's useful for breaking down complex proofs into steps and is
 used around 36,000 times in mathlib.
 -/
 
--- This is `Function.comp` in Lean (Init.Prelude), i.e., `(h₂ ∘ h₁) p`
+-- The underlying pattern is function composition — see `Function.comp`
 theorem example_forward (P Q R : Prop) (h₁ : P → Q) (h₂ : Q → R) (p : P) : R := by
   have q : Q := by exact h₁ p -- Since P implies Q and we have a proof of P, we have a proof of Q
   have r : R := by exact h₂ q -- Since Q implies R and we have a proof of Q, we have a proof of R
@@ -74,6 +74,8 @@ example (P Q R : Prop) (h₁ : P → Q) (h₂ : Q → R) (p : P) : R := by
 
 example (P Q R : Prop) (h₁ : P → Q) (h₂ : Q → R) (p : P) : R :=
   h₂ (h₁ p) -- or `h₂ <| h₁ p` or `(h₂ ∘ h₁) p`
+
+#check @Function.comp -- Our footprint uses propositions; `Function.comp` is the general version
 
 /-
 There is some overlap between `let` and `have`. The simple mental
@@ -97,7 +99,7 @@ theorem example_backward (P Q R : Prop) (h₁ : P → Q) (h₂ : Q → R) (p : P
   apply h₁ -- To prove Q, it suffices to prove P
   exact p  -- We need and have a proof of P
 
-#print example_backward -- This just produces the forward term proof `h₂ (h₁ p)`
+#print example_backward -- Same term proof as example_forward: `h₂ (h₁ p)`
 /-
 Note that `apply`ing an implication to your goal is inherently destructive:
 it is very possible that you end up with a goal that is actually hard
