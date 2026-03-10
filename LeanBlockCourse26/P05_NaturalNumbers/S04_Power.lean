@@ -88,6 +88,16 @@ theorem add_sq (n m : MyNat) :
     (n + m) ^ (2 : MyNat) = n ^ (2 : MyNat) + m ^ (2 : MyNat) + 2 * n * m := by
   sorry
 
--- Exercise 1.10 (Master) – State (and prove?) Fermat's Last Theorem
+/-
+## Bonus (Master): State (and prove) Fermat's Last Theorem
+
+Fermat's Last Theorem states that if `x, y, z > 0` and
+`m ≥ 3` then `x^m + y^m ≠ z^m`.
+
+The shortest solution known to humans would translate into
+many millions of lines of Lean code. Kevin Buzzard is working
+on translating the proof by Wiles and Taylor into Lean, although
+this task will take many years.
+-/
 
 end MyNat
