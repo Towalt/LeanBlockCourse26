@@ -105,6 +105,11 @@ provided by Lean, which also means we inherit the `+` notation.
 
 instance instAdd : Add MyNat where add := add
 
+def mul (m n : MyNat) : MyNat :=
+  match n with
+  | zero => zero
+  | succ k => (mul m k) + m
+
 example : 2 + 2 = add 2 2 := rfl
 
 theorem succ_eq_add_one (n : MyNat) : succ n = n + 1 := rfl
@@ -155,7 +160,13 @@ theorem zero_zero : 0 = MyNat.zero := rfl
 -- addition, which equals `S(succ(n + m))` by the inductive hypothesis, and
 -- this is `succ(n + S(m))` again by definition of addition.
 theorem succ_add (n m : MyNat) : succ n + m = succ (n + m) := by
-  sorry
+  induction m with
+  | zero =>
+    rw[← zero_zero]
+    rw[add_zero, add_zero]
+  | succ =>
+    expose_names
+    rw[add_succ, add_succ, a_ih]
 
 -- Exercise 2.2 – Commutativity
 -- By induction on `m`. The base case `n + 0 = 0 + n` holds by `add_zero`
@@ -163,7 +174,12 @@ theorem succ_add (n m : MyNat) : succ n + m = succ (n + m) := by
 -- which equals `S(m + n)` by the inductive hypothesis, and this is
 -- `S(m) + n` by `succ_add`.
 theorem add_comm (n m : MyNat) : n + m = m + n := by
-  sorry
+  induction m with
+  | zero =>
+    rw[← zero_zero, add_zero, zero_add]
+  | succ =>
+    expose_names
+    rw[add_succ, succ_add, a_ih]
 
 -- Exercise 2.3 – Associativity
 -- By induction on `k`. The base case is immediate. For the inductive step,
@@ -171,26 +187,30 @@ theorem add_comm (n m : MyNat) : n + m = m + n := by
 -- `S(n + (m + k))` by the inductive hypothesis, and this is
 -- `n + S(m + k) = n + (m + S(k))` by definition.
 theorem add_assoc (n m k : MyNat) : (n + m) + k = n + (m + k) := by
-  sorry
+  induction k with
+  | zero => rfl
+  | succ =>
+    expose_names
+    rw[add_succ, a_ih, ← add_succ, add_succ m]
 
 -- Exercise 2.4 – Right commutativity
 -- By associativity, `(n + m) + k = n + (m + k)`. By commutativity of the
 -- inner sum, `n + (m + k) = n + (k + m)`. By associativity again,
 -- `n + (k + m) = (n + k) + m`.
 theorem add_right_comm (n m k : MyNat) : n + m + k = n + k + m := by
-  sorry
+  rw[add_assoc, add_comm m k, add_assoc]
 
 -- Exercise 2.5 (Master)
 -- Follows directly from the injectivity of the successor (seventh Peano axiom).
 example (n m : MyNat) (h : succ (n + 37) = succ (m + 42)) : n + 37 = m + 42 := by
-  sorry
+  exact MyNat.noConfusion h id
 
 -- Exercise 2.6 (Master)
 example (n m : MyNat) (h1 : n = 37) (h2 : n = 37 → m = 42) : m = 42 := by
-  sorry
+  exact h2 h1
 
 -- Exercise 2.7 (Master)
 example (n m : MyNat) (h1 : n = m) (h2 : n ≠ m) : False := by
-  sorry
+  exact h2 h1
 
 end MyNat
