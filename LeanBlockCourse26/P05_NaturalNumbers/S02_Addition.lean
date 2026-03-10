@@ -12,7 +12,7 @@ import ProofGolf
 # Addition
 =====================
 
-Addition is an operator `+` on two natural numers that produces a third
+Addition is an operator `+` on two natural numbers that produces a third
 natural number and is defined inductively through two axioms:
 
 (i)  n + 0 = n
@@ -38,13 +38,13 @@ axiom axiom_add_zero (n : MyNat) : axiom_add n 0 = n
 -- ... and `axiom_add m n.succ = (axiom_add m n).succ`
 axiom axiom_add_succ (m n : MyNat) : axiom_add m n.succ = (axiom_add m n).succ
 
--- Note that defined axiomatically types of course still `#check` out ...
+-- Note that axiomatically defined types of course still `#check` out ...
 #check axiom_add
 #check axiom_add 0
 #check axiom_add 0 0
 
--- but we cannot actually `#eval' this addition, so we mark it `noncomputable`
--- #eval axiom_add 0 0 
+-- but we cannot actually `#eval` this addition, so we mark it `noncomputable`
+-- #eval axiom_add 0 0
 
 /-
 ## Exercise Block B01
@@ -70,7 +70,7 @@ example : axiom_add 2 2 = 4 := by
 
 
 /-
-**Remark:** So far we have proved very nuclear statements that can and usually should
+**Remark:** So far we have proved very elementary statements that can and usually should
 be derived from first principles. Now we are starting to build up a framework and
 we should develop the habit of actually reusing what we previously used rather than
 brute forcing each statement back to the core definition of `MyNat` and `add`.
@@ -94,7 +94,7 @@ def add (m n : MyNat) : MyNat :=
   | zero => m                 -- same as `axiom add_zero'`
   | succ k => (add m k).succ  -- same as `axiom add_succ'`
 
-#eval add 2 3 
+#eval add 2 3
 
 /-
 ## Using the `+` notation
@@ -110,10 +110,8 @@ example : 2 + 2 = add 2 2 := rfl
 theorem succ_eq_add_one (n : MyNat) : succ n = n + 1 := rfl
 
 /-
-## Comment
-
-All B01 exercise now just become `rfl` true. We can still prove and
-then use lemmas `add_zero` and `add_succ` (which Lean actuall does).
+**Comment:** All B01 exercises now just become `rfl` true. We can still prove and
+then use lemmas `add_zero` and `add_succ` (which Lean actually does).
 -/
 
 -- Compare `Nat.add_zero` ...
@@ -125,48 +123,73 @@ theorem add_succ (a b : MyNat) : a + b.succ = (a + b).succ := rfl
 /-
 ## Proof by induction on an inductive type
 
-We can prove that `0 + n = n` proved by induction on `n`.
+We can prove that `0 + n = n` by induction on `n`.
 -/
 
 theorem zero_add (n : MyNat) : 0 + n = n := by
   induction n with
   | zero => exact add_zero 0       -- or just `rfl` so `add_zero` is optional here ...
-  | succ n ih => rw [add_succ, ih] -- ... but the `rw` tactic actuall needs `add_succ` here!
+  | succ n ih => rw [add_succ, ih] -- ... but the `rw` tactic actually needs `add_succ` here!
 
 
 /-
 ## Exercise Block B02
+
+**Remark 1:** `0` without any additional context will be interpreted as `Nat.zero`.
+If there is additional `MyNat` context around it, type inference will be able
+to understand that this should actually instead be `MyNat.zero`. If you should
+run into issues where this does *not* work, you can explicitly specify the
+type as usual through `(0 : MyNat)`.
+
+**Remark 2:** If you encounter `MyNat.zero` but want to apply a theorem that
+uses `(0 : MyNat)` then the type checker can sometimes not consolidate these
+two. For this we can simply define a little `zero_zero` helper with which we
+can rewrite.
 -/
 
+theorem zero_zero : 0 = MyNat.zero := rfl
+
 -- Exercise 2.1
+-- By induction on `m`. For the base case, both sides simplify to `succ n`.
+-- For the inductive step, `succ n + S(m) = S(succ n + m)` by definition of
+-- addition, which equals `S(succ(n + m))` by the inductive hypothesis, and
+-- this is `succ(n + S(m))` again by definition of addition.
 theorem succ_add (n m : MyNat) : succ n + m = succ (n + m) := by
   sorry
 
 -- Exercise 2.2 – Commutativity
+-- By induction on `m`. The base case `n + 0 = 0 + n` holds by `add_zero`
+-- and `zero_add`. For the inductive step, `n + S(m) = S(n + m)` by definition,
+-- which equals `S(m + n)` by the inductive hypothesis, and this is
+-- `S(m) + n` by `succ_add`.
 theorem add_comm (n m : MyNat) : n + m = m + n := by
   sorry
 
--- Exercise 2.1 – Associativity
+-- Exercise 2.3 – Associativity
+-- By induction on `k`. The base case is immediate. For the inductive step,
+-- `(n + m) + S(k) = S((n + m) + k)` by definition, which equals
+-- `S(n + (m + k))` by the inductive hypothesis, and this is
+-- `n + S(m + k) = n + (m + S(k))` by definition.
 theorem add_assoc (n m k : MyNat) : (n + m) + k = n + (m + k) := by
   sorry
 
--- Exercise 2.1 – Right commutativity
+-- Exercise 2.4 – Right commutativity
+-- By associativity, `(n + m) + k = n + (m + k)`. By commutativity of the
+-- inner sum, `n + (m + k) = n + (k + m)`. By associativity again,
+-- `n + (k + m) = (n + k) + m`.
 theorem add_right_comm (n m k : MyNat) : n + m + k = n + k + m := by
   sorry
 
--- Exercise 2.1 (Master)
+-- Exercise 2.5 (Master)
+-- Follows directly from the injectivity of the successor (seventh Peano axiom).
 example (n m : MyNat) (h : succ (n + 37) = succ (m + 42)) : n + 37 = m + 42 := by
   sorry
 
--- Exercise 2.1 (Master)
+-- Exercise 2.6 (Master)
 example (n m : MyNat) (h1 : n = 37) (h2 : n = 37 → m = 42) : m = 42 := by
   sorry
 
--- Exercise 2.1 (Master)
-example (n m : MyNat) (h1 : n = m) (h2 : n ≠ m) : False := by
-  sorry
-
--- Exercise 2.1
+-- Exercise 2.7 (Master)
 example (n m : MyNat) (h1 : n = m) (h2 : n ≠ m) : False := by
   sorry
 
