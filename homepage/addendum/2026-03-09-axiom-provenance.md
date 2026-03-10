@@ -29,12 +29,20 @@ The proof term is the only place where axiom dependencies live. Proof irrelevanc
 
 ## `#print axioms` is meta-level
 
-`#print axioms` and its metaprogramming counterpart `Lean.Environment.collectAxioms` work by inspecting the actual proof term in the environment *before* erasure. This is a **meta-level** operation — it examines the syntax tree of the proof, not its logical content. You could write a Lean 4 metaprogram or linter that checks whether `Classical.choice` appears in the transitive closure of a definition's dependencies, but this remains external to the logic.
+`#print axioms` and its metaprogramming counterpart `Lean.collectAxioms` work by inspecting the actual proof term in the environment *before* erasure. This is a **meta-level** operation — it examines the syntax tree of the proof, not its logical content. You could write a Lean 4 metaprogram or linter that checks whether `Classical.choice` appears in the transitive closure of a definition's dependencies, but this remains external to the logic.
 
 ```lean
 -- This is a meta-level check, not a proposition:
 #print axioms Nat.add_comm
--- [propext, Quot.sound]
+-- does not depend on any axioms
+
+theorem usesByCases (P : Prop) : P ∨ ¬ P := by
+  by_cases h : P
+  · exact Or.inl h
+  · exact Or.inr h
+
+#print axioms usesByCases
+-- in Lean 4.28 / this course toolchain: [propext, Classical.choice, Quot.sound]
 
 -- There is no way to write:
 -- theorem add_comm_is_constructive : AxiomFree Nat.add_comm := ...
@@ -67,9 +75,9 @@ Leonardo de Moura stated on the [Lean Zulip](https://leanprover-community.github
 
 > "The bare-bones system can be used for constructive mathematics. That being said, a lot of the proof automation we are building is using axioms such as `propext`."
 
-Core tactics like `simp` and `by_cases` rely on classical axioms, and de Moura recommended users who prioritize constructive mathematics consider Agda or Coq.
+A representative example is `by_cases`: in core Lean it uses excluded middle (`Classical.em`), so proofs using it can pick up classical axioms. `simp` often introduces `propext`, and can also inherit axiom dependencies from the lemmas it uses. De Moura also recommended that users who prioritize constructive mathematics consider Agda or Coq.
 
-A [separate discussion](https://leanprover-community.github.io/archive/stream/348111-std4/topic/How.20classical.20is.20std4.3F.html) revealed that even simple lemmas like `Nat.min_succ_succ` depend on `Classical.choice` because `split` invokes `Classical.em` rather than looking for `Decidable` instances. Mario Carneiro noted that Std4 "tries to avoid classical logic when it can be accomplished without significant difficulty," but fixing this requires changes to Lean's core.
+A [separate discussion](https://leanprover-community.github.io/archive/stream/348111-std4/topic/How.20classical.20is.20std4.3F.html) illustrates that this can be version-sensitive: at the time (2023), even simple Std4 lemmas (including the then-current `Nat.min_succ_succ`) could depend on `Classical.choice` because `split` invoked `Classical.em` rather than reusing `Decidable` instances. Mario Carneiro noted that Std4 "tries to avoid classical logic when it can be accomplished without significant difficulty," but fixing this requires changes to Lean's core.
 
 ## The trade-off
 

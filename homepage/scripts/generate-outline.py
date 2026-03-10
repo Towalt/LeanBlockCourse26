@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 HOMEPAGE = Path(__file__).resolve().parent.parent
 ROOT = HOMEPAGE.parent
 CODE_DIR = ROOT / "LeanBlockCourse26"
-SLIDES_DIR = HOMEPAGE / "lecture-slides"
+SLIDES_DIR = HOMEPAGE / "slides"
 OUT = HOMEPAGE / "OUTLINE.md"
 HOME = HOMEPAGE / "HOME.md"
 README = ROOT / "README.md"
