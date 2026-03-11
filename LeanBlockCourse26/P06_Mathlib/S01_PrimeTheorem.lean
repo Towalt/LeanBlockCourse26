@@ -51,31 +51,49 @@ To do this, you should:
 
 theorem infinitude_of_primes_tfae : [
 
-    -- The set of primes is infinite
+    -- 1) The set of primes is infinite
     { p : ℕ | p.Prime }.Infinite,
 
-    -- The subtype of primes is infinite
+    -- 2) The subtype of primes is infinite
     Infinite { p : ℕ // p.Prime },
 
-    -- For any finite set we can find a prime number outside of it
+    -- 3) For any finite set we can find a prime number outside of it
     ∀ (S : Finset ℕ), (∃ p ∉ S, p.Prime),
 
-    -- For any finite set *of prime numbers* we can find a prime number outside of it
+    -- 4) For any finite set *of prime numbers* we can find a prime number outside of it
     (∀ (S : Finset ℕ) (_ : ∀ s ∈ S, Nat.Prime s), (∃ p ∉ S, p.Prime)),
 
-    -- For any natural number there exists a prime strictly greater than it
+    -- 5) For any natural number there exists a prime strictly greater than it
     (∀ n : ℕ, (∃ p > n, p.Prime)),
 
-    -- There exists an injection from the Natural numbers into the primes
+    -- 6) There exists an injection from the Natural numbers into the primes
     ∃ (P : ℕ → ℕ) (h : P.Injective), (∀ k, (P k).Prime) ].TFAE := by
 
-  tfae_have 1 ↔ 2 := by sorry
+  tfae_have 5 → 6 := by sorry -- Theo
 
-  tfae_have 2 ↔ 3 := by sorry
+  tfae_have 2 → 3 := by sorry -- Arthur
 
-  tfae_have 4 ↔ 2 := by sorry
+  tfae_have 1 → 2 := by sorry -- Onat
 
-  tfae_have 1 ↔ 5 := by sorry
+  tfae_have 1 → 6 := by sorry -- Bohdan
+
+  tfae_have 3 → 2 := by sorry -- Leonie
+
+  tfae_have 3 → 4 := by sorry -- Alexandra
+
+  tfae_have 5 → 4 := by sorry -- Sammy
+  
+  tfae_have 6 → 3 := by sorry -- Anna
+
+  tfae_have 6 → 1 := by sorry -- Alexander
+
+  tfae_have 4 → 1 := by sorry -- Cara
+
+  tfae_have 1 → 5 := by sorry -- Tonio
+
+  tfae_have 1 → 3 := by sorry -- Nina
+
+  tfae_have 3 → 5 := by sorry -- Daniel
 
   tfae_finish
 
