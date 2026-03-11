@@ -147,8 +147,6 @@ two. For this we can simply define a little `zero_zero` helper with which we
 can rewrite.
 -/
 
-theorem zero_zero : 0 = MyNat.zero := rfl
-
 -- Exercise 2.1
 -- By induction on `m`. For the base case, both sides simplify to `succ n`.
 -- For the inductive step, `succ n + S(m) = S(succ n + m)` by definition of

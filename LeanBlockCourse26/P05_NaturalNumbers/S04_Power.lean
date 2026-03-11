@@ -52,7 +52,7 @@ theorem pow_one (n : MyNat) : n ^ (1 : MyNat) = n := by
 -- hypothesis and `mul_one`.
 theorem one_pow (n : MyNat) : (1 : MyNat) ^ n = 1 := by
   induction n with
-  | zero => rw [← zero_eq_zero, pow_zero]
+  | zero => rw [← zero_zero, pow_zero]
   | succ m ih => rw [pow_succ, ih, mul_one]
 
 -- Exercise 1.5
@@ -67,7 +67,7 @@ theorem pow_two (n : MyNat) : n ^ (2 : MyNat) = n * n := by
 -- rearrange with `mul_assoc`.
 theorem pow_add (n m k : MyNat) : n ^ (m + k) = n ^ m * n ^ k := by
   induction k with
-  | zero => rw [← zero_eq_zero, add_zero, pow_zero, mul_one]
+  | zero => rw [← zero_zero, add_zero, pow_zero, mul_one]
   | succ k' ih => rw [add_succ, pow_succ, pow_succ, ih, mul_assoc]
 
 -- Exercise 1.7
@@ -76,7 +76,7 @@ theorem pow_add (n m k : MyNat) : n ^ (m + k) = n ^ m * n ^ k := by
 -- inductive hypothesis, and rearrange with `mul_assoc` and `mul_comm`.
 theorem mul_pow (n m k : MyNat) : (n * m) ^ k = n ^ k * m ^ k := by
   induction k with
-  | zero => rw [← zero_eq_zero, pow_zero, pow_zero, pow_zero, mul_one]
+  | zero => rw [← zero_zero, pow_zero, pow_zero, pow_zero, mul_one]
   | succ k' ih =>
     rw [pow_succ, pow_succ, pow_succ, ih]
     repeat rw [mul_assoc]
@@ -88,7 +88,7 @@ theorem mul_pow (n m k : MyNat) : (n * m) ^ k = n ^ k * m ^ k := by
 -- hypothesis, then use `mul_succ` and `pow_add`.
 theorem pow_pow (n m k : MyNat) : (n ^ m) ^ k = n ^ (m * k) := by
   induction k with
-  | zero => rw [← zero_eq_zero, mul_zero, pow_zero, pow_zero]
+  | zero => rw [← zero_zero, mul_zero, pow_zero, pow_zero]
   | succ k' ih => rw [pow_succ, ih, mul_succ, pow_add]
 
 -- Exercise 1.9 (Master)
@@ -303,6 +303,7 @@ to tag is a design choice — following mathlib conventions:
 attribute [simp] add_zero zero_add mul_zero zero_mul
 attribute [simp] mul_one one_mul
 attribute [simp] pow_zero pow_one one_pow
+attribute [simp] zero_zero
 
 /-
 **Structural lemmas** like `pow_succ`, `mul_add`, `add_mul`, `pow_add`,

@@ -70,17 +70,72 @@ def lt (n m : MyNat) := (succ n) ≤ m
 
 instance : LT MyNat := ⟨MyNat.lt⟩
 
+theorem lt_iff (n m : MyNat) : n < m ↔ (succ n) ≤ m := by rfl
+
 /-
 ## Exercise Block B01
 -/
 
 -- Exercise 1.1
 theorem zero_lt (n : MyNat) (h : n ≠ 0) : 0 < n := by
-  sorry
+  rw [lt_iff] -- optional
+  cases n with
+  | zero => contradiction
+  | succ n => use n; rw [add_comm]; rfl
+
+-- A slightly nicer proof first establishes this auxiliary lemma ...
+theorem le_succ (m n : MyNat) : (m ≤ n) ↔ (m.succ ≤ n.succ) := by
+  constructor <;> intro ⟨k, hk⟩ <;> use k
+  · rw [succ_add, hk]
+  · rw [succ_add, succ_inj] at hk; assumption
+
+-- ...and use this
+example (n : MyNat) (h : n ≠ 0) : 0 < n := by
+  obtain ⟨k, hk⟩ := eq_succ_of_ne_zero h
+  rw [hk, lt_iff, ← le_succ]
+  exact zero_le k
+  
+example (n : MyNat) (h : n ≠ 0) : 0 < n := by
+  obtain ⟨k, hk⟩ := eq_succ_of_ne_zero h
+  simp [hk, lt_iff, ← le_succ, ]
+  rw [zero_zero.symm] 
+  exact zero_le k
 
 -- Exercise 1.2 (Master)
 theorem lt_iff_le_ne' (m n : MyNat) : m < n ↔ ∃k, k ≠ 0 ∧ m + k = n := by
-  sorry
+  repeat rw [lt_iff, le_iff] -- optional
+  constructor
+  · intro h
+    obtain ⟨k, h⟩ := h
+    rw [succ_add, ← add_succ] at h
+    use k.succ
+    constructor
+    · exact (zero_ne_succ k).symm 
+    · exact h.symm
+  · intro h
+    obtain ⟨k, ⟨kn_zero, h⟩⟩ := h
+    obtain ⟨k', hk'⟩ := eq_succ_of_ne_zero kn_zero
+    use k'
+    rw [succ_add, ← add_succ, ← hk']
+    exact h.symm
+    
+example (m n : MyNat) : m < n ↔ ∃k, k ≠ 0 ∧ m + k = n := by
+  simp [lt_iff, le_iff, add_succ]
+  constructor
+  · intro ⟨k, h⟩
+    exact ⟨k.succ, (zero_ne_succ k).symm, h.symm⟩
+  · intro ⟨k, ⟨kn_zero, h⟩⟩
+    obtain ⟨k', hk'⟩ := eq_succ_of_ne_zero kn_zero
+    exact ⟨k', add_succ m k' ▸ hk' ▸ h.symm⟩ 
+    
+-- example (m n : MyNat) : m < n ↔ ∃k, k ≠ 0 ∧ m + k = n := by
+--   calc m < n
+--       ↔ m.succ ≤ n            := lt_iff m n
+--     _ ↔ ∃k, (n = m.succ + k)  := le_iff n m.succ
+--     -- _ ↔ ∃k, (n = k + m.succ)  := by simp
+--     -- _ ↔ ∃k, (n = succ (k + m)):= by simp
+--     _ ↔ ∃k, n = m + (succ k)  := by simp
+--     _ ↔ ∃k, k ≠ 0 ∧ m + k = n := by sorry
 
 -- Exercise 1.3
 theorem le_succ_self (n : MyNat) : n ≤ succ n := by

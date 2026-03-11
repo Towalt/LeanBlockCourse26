@@ -56,7 +56,7 @@ theorem two_eq_succ_one : 2 = succ 1 := rfl
 theorem three_eq_succ_two : 3 = succ 2 := rfl
 theorem four_eq_succ_three : 4 = succ 3 := rfl
 theorem five_eq_succ_four : 5 = succ 4 := rfl
-theorem zero_eq_zero : 0 = zero := rfl
+theorem zero_zero : 0 = zero := rfl
 
 /-
 ## Exercise Block B01
@@ -271,6 +271,8 @@ theorem eight_peano_axiom_trivial (n : MyNat) : 0 ≠ succ n := by
 #print eight_peano_axiom_trivial
 
 theorem eight_peano_axiom (n : MyNat) : 0 ≠ succ n := MyNat.noConfusion
+
+def zero_ne_succ := eight_peano_axiom
 
 -- Exercise 2.2
 theorem zero_ne_one_rw : (0 : MyNat) ≠ 1 := by
