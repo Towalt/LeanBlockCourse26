@@ -242,6 +242,10 @@ example {m n : MyNat} (h : MyNat.succ n = MyNat.succ m) : n = m := MyNat.noConfu
 
 #print MyNat.noConfusion
 
+theorem succ_inj {m n : MyNat} : (succ n = succ m) ↔ n = m := by 
+  constructor <;> intro h
+  · exact MyNat.noConfusion h id
+  · rw [h]
 
 /-
 ## Exercise Block B02
