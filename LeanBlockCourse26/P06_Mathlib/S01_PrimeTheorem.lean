@@ -163,7 +163,7 @@ theorem infinitude_of_primes_tfae : [
    -- ∀ n : ℕ, ∃ m, n ≤ Nat.primeCounting m,
 
    -- **(9) The cardinality of the primes equals ℵ₀**
-   -- Cardinal.mk { p : ℕ // p.Prime } = ℵ₀,
+   Cardinal.mk { p : ℕ // p.Prime } = Cardinal.aleph0,
    ].TFAE := by
 
    tfae_have 5 → 6 := by -- Theo
@@ -339,6 +339,12 @@ theorem infinitude_of_primes_tfae : [
    tfae_have 7 → 1 := fun _ => Nat.infinite_setOf_prime -- Bohdan / Kimia
 
    tfae_have 1 → 7 := Nat.nth_strictMono -- Bohdan / Kimia
+
+   tfae_have 8 → 2 := by
+      intro h
+      rw [Cardinal.infinite_iff, h]
+
+   tfae_have 2 → 8 := fun h => @Cardinal.mk_eq_aleph0 _ inferInstance h
 
    tfae_finish
 
