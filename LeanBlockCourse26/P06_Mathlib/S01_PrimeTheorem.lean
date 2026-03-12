@@ -216,7 +216,9 @@ theorem infinitude_of_primes_tfae : [
 
   tfae_have 2 → 3 := by sorry -- Arthur
 
-  tfae_have 1 → 2 := by sorry -- Onat
+  tfae_have 1 → 2 := by -- Onat
+   intro h
+   exact { not_finite := h }
 
   tfae_have 1 → 6 := by -- Bohdan
     intro h
